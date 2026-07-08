@@ -1,0 +1,20 @@
+{
+    "name": "LegionBreak.Presentation.Composition",
+    "rootNamespace": "LegionBreak.Presentation.Composition",
+    "references": [
+        "LegionBreak.Domain",
+        "LegionBreak.Application",
+        "LegionBreak.Infrastructure",
+        "LegionBreak.Presentation",
+        "VContainer"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

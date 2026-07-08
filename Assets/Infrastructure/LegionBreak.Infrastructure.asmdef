@@ -1,0 +1,27 @@
+{
+    "name": "LegionBreak.Infrastructure",
+    "rootNamespace": "LegionBreak.Infrastructure",
+    "references": [
+        "LegionBreak.Domain",
+        "LegionBreak.Application",
+        "LegionBreak.Data",
+        "VContainer",
+        "UniTask",
+        "R3.Unity",
+        "Unity.Burst",
+        "Unity.Collections",
+        "Unity.Jobs",
+        "Unity.Mathematics",
+        "Unity.Addressables",
+        "Unity.ResourceManager"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

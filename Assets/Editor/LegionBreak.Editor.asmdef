@@ -1,0 +1,23 @@
+{
+    "name": "LegionBreak.Editor",
+    "rootNamespace": "LegionBreak.Editor",
+    "references": [
+        "LegionBreak.Domain",
+        "LegionBreak.Data",
+        "LegionBreak.Application",
+        "LegionBreak.Infrastructure",
+        "LegionBreak.Presentation",
+        "LegionBreak.Presentation.Composition"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,19 @@
+{
+    "name": "LegionBreak.Application",
+    "rootNamespace": "LegionBreak.Application",
+    "references": [
+        "LegionBreak.Domain",
+        "LegionBreak.Data",
+        "UniTask",
+        "R3.Unity"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

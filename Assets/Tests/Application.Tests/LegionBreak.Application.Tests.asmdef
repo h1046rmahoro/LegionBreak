@@ -1,0 +1,25 @@
+{
+    "name": "LegionBreak.Application.Tests",
+    "rootNamespace": "LegionBreak.Application.Tests",
+    "references": [
+        "LegionBreak.Domain",
+        "LegionBreak.Data",
+        "LegionBreak.Application",
+        "UniTask",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
