@@ -1,12 +1,36 @@
+using LegionBreak.Application.Movement;
+using LegionBreak.Infrastructure.Movement;
+using LegionBreak.Presentation.Movement;
 using VContainer;
 using VContainer.Unity;
 
 namespace LegionBreak.Presentation.Composition
 {
+    /// <summary>
+    /// 게임의 최상위 Composition Root.
+    /// Domain/Application에서 정의된 인터페이스에 Infrastructure 구현체를 바인딩하는
+    /// 유일한 지점이다. 이 클래스 외에는 어떤 Presentation 코드도 Infrastructure를
+    /// 직접 참조해서는 안 된다.
+    ///
+    /// 씬 설정:
+    /// 1. 부트스트랩 씬에 빈 GameObject 생성 (예: "GameLifetimeScope")
+    /// 2. 이 스크립트를 부착
+    /// 3. Inspector에서 Parent를 비워두면 루트 스코프로 동작
+    /// 4. autoRun은 기본 true (씬 로드 시 자동으로 Configure 호출)
+    /// </summary>
     public class GameLifetimeScope : LifetimeScope
     {
         protected override void Configure(IContainerBuilder builder)
         {
+            // Application: 유스케이스 (이동량 계산은 분기·밸런스 없는 범용 수학이라
+            // Domain으로 분리하지 않고 유스케이스에 인라인되어 있음)
+            builder.Register<IPlayerMoveUseCase, PlayerMoveUseCase>(Lifetime.Singleton);
+
+            // Infrastructure: 씬에 존재하는 실제 구현체를 찾아 인터페이스에 바인딩
+            builder.RegisterComponentInHierarchy<TransformPlayerMotor>().AsImplementedInterfaces();
+
+            // Presentation: 씬에 존재하는 입력 처리기에 위 의존성을 주입
+            builder.RegisterComponentInHierarchy<PlayerInputController>();
         }
     }
 }
