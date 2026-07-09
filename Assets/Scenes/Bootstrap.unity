@@ -597,10 +597,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1509234753}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de76a8258cf52a847ada7347fe4d3b41, type: 3}
+  m_Script: {fileID: 11500000, guid: 22b67bd8ced09b64c9ca9d62797a2fc6, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: LegionBreak.Infrastructure::LegionBreak.Infrastructure.Spawning.InstantiateMonsterSpawner
+  m_EditorClassIdentifier: LegionBreak.Infrastructure::LegionBreak.Infrastructure.Spawning.PooledMonsterSpawner
   _monsterLifetimeSeconds: 3
+  _prewarmCount: 500
 --- !u!1 &1539404204
 GameObject:
   m_ObjectHideFlags: 0
