@@ -31,6 +31,12 @@ namespace LegionBreak.Presentation.Composition
             // Infrastructure: 씬에 존재하는 실제 구현체를 찾아 인터페이스에 바인딩
             builder.RegisterComponentInHierarchy<TransformPlayerMotor>().AsImplementedInterfaces();
 
+            // 이동/타겟팅 Job 병렬화 Before/After 비교용: 씬에는 아래 둘 중 하나의
+            // 컴포넌트만 부착하고, 그에 맞는 한 줄만 활성화한다.
+            // Before(베이스라인): MonoMonsterMovementSystem
+            // After(Job+Burst 병렬화, 현재 활성화): JobMonsterMovementSystem
+            builder.RegisterComponentInHierarchy<JobMonsterMovementSystem>().AsImplementedInterfaces();
+
             // 풀링 Before/After 비교용: 씬에는 아래 둘 중 하나의 컴포넌트만 부착하고,
             // 그에 맞는 한 줄만 활성화한다.
             // Before(베이스라인): InstantiateMonsterSpawner

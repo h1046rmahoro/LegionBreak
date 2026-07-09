@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using LegionBreak.Application.Spawning;
+using LegionBreak.Infrastructure.Movement;
 using UnityEngine;
+using VContainer;
 
 namespace LegionBreak.Infrastructure.Spawning
 {
@@ -16,6 +18,13 @@ namespace LegionBreak.Infrastructure.Spawning
 
         private readonly Stack<DummyMonsterView> _pool = new Stack<DummyMonsterView>();
         private Action<DummyMonsterView> _onLifetimeEndedCached;
+        private IMonsterMovementSystem _movementSystem;
+
+        [Inject]
+        public void Construct(IMonsterMovementSystem movementSystem)
+        {
+            _movementSystem = movementSystem;
+        }
 
         private void Awake()
         {
@@ -27,12 +36,13 @@ namespace LegionBreak.Infrastructure.Spawning
             }
         }
 
-        public void Spawn(System.Numerics.Vector2 position)
+        public void Spawn(Vector2 position)
         {
             var view = _pool.Count > 0 ? _pool.Pop() : CreatePooledInstance();
-            view.transform.position = new Vector3(position.X, 0f, position.Y);
+            view.transform.position = new Vector3(position.x, 0f, position.y);
             view.gameObject.SetActive(true);
             view.Initialize(_monsterLifetimeSeconds, _onLifetimeEndedCached);
+            _movementSystem?.Register(view);
         }
 
         private DummyMonsterView CreatePooledInstance()
@@ -45,6 +55,7 @@ namespace LegionBreak.Infrastructure.Spawning
 
         private void OnMonsterLifetimeEnded(DummyMonsterView view)
         {
+            _movementSystem?.Unregister(view);
             view.gameObject.SetActive(false);
             _pool.Push(view);
         }

@@ -1,4 +1,4 @@
-using System.Numerics;
+using UnityEngine;
 
 namespace LegionBreak.Application.Movement
 {
@@ -19,12 +19,12 @@ namespace LegionBreak.Application.Movement
         // Domain은 데미지 공식 등 실제 도메인 규칙이 있는 로직에만 사용한다.
         public void Execute(Vector2 inputDirection, float deltaTime)
         {
-            if (inputDirection == Vector2.Zero)
+            if (inputDirection == Vector2.zero)
             {
                 return;
             }
 
-            var displacement = Vector2.Normalize(inputDirection) * MoveSpeed * deltaTime;
+            var displacement = inputDirection.normalized * MoveSpeed * deltaTime;
             _motor.Move(displacement);
         }
     }

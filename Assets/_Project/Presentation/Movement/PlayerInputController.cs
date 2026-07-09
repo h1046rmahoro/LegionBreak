@@ -38,8 +38,8 @@ namespace LegionBreak.Presentation.Movement
                 return;
             }
 
-            var input = _moveAction.ReadValue<UnityEngine.Vector2>();
-            _moveUseCase.Execute(new System.Numerics.Vector2(input.x, input.y), Time.deltaTime);
+            var input = _moveAction.ReadValue<Vector2>();
+            _moveUseCase.Execute(input, Time.deltaTime);
         }
 
         private void OnDestroy()

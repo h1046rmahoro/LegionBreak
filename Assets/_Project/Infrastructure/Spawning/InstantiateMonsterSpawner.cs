@@ -19,10 +19,10 @@ namespace LegionBreak.Infrastructure.Spawning
             _onLifetimeEndedCached = OnMonsterLifetimeEnded;
         }
 
-        public void Spawn(System.Numerics.Vector2 position)
+        public void Spawn(Vector2 position)
         {
             var go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            go.transform.position = new Vector3(position.X, 0f, position.Y);
+            go.transform.position = new Vector3(position.x, 0f, position.y);
             var view = go.AddComponent<DummyMonsterView>();
             view.Initialize(_monsterLifetimeSeconds, _onLifetimeEndedCached);
         }

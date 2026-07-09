@@ -1,4 +1,4 @@
-using System.Numerics;
+using UnityEngine;
 
 namespace LegionBreak.Application.Movement
 {
@@ -9,5 +9,6 @@ namespace LegionBreak.Application.Movement
     public interface IPlayerMotor
     {
         void Move(Vector2 displacement);
+        Vector2 Position { get; }
     }
 }

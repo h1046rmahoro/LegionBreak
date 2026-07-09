@@ -40,7 +40,7 @@ namespace LegionBreak.Presentation.Spawning
 
             var angle = Random.Range(0f, Mathf.PI * 2f);
             var distance = Random.Range(0f, _spawnRadius);
-            var position = new System.Numerics.Vector2(Mathf.Cos(angle) * distance, Mathf.Sin(angle) * distance);
+            var position = new Vector2(Mathf.Cos(angle) * distance, Mathf.Sin(angle) * distance);
             _spawner.Spawn(position);
         }
     }
