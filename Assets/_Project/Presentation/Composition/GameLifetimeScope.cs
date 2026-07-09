@@ -1,6 +1,8 @@
 using LegionBreak.Application.Movement;
 using LegionBreak.Infrastructure.Movement;
+using LegionBreak.Infrastructure.Spawning;
 using LegionBreak.Presentation.Movement;
+using LegionBreak.Presentation.Spawning;
 using VContainer;
 using VContainer.Unity;
 
@@ -29,8 +31,15 @@ namespace LegionBreak.Presentation.Composition
             // Infrastructure: 씬에 존재하는 실제 구현체를 찾아 인터페이스에 바인딩
             builder.RegisterComponentInHierarchy<TransformPlayerMotor>().AsImplementedInterfaces();
 
+            // 풀링 Before/After 비교용: 씬에는 아래 둘 중 하나의 컴포넌트만 부착하고,
+            // 그에 맞는 한 줄만 활성화한다.
+            // Before(베이스라인): InstantiateMonsterSpawner
+            // After(풀링 적용, 현재 활성화): PooledMonsterSpawner
+            builder.RegisterComponentInHierarchy<PooledMonsterSpawner>().AsImplementedInterfaces();
+
             // Presentation: 씬에 존재하는 입력 처리기에 위 의존성을 주입
             builder.RegisterComponentInHierarchy<PlayerInputController>();
+            builder.RegisterComponentInHierarchy<MonsterSpawnTester>();
         }
     }
 }
