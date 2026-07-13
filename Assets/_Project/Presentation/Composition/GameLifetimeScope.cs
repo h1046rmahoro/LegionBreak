@@ -1,5 +1,6 @@
 using LegionBreak.Application.Movement;
 using LegionBreak.Infrastructure.Movement;
+using LegionBreak.Infrastructure.Separation;
 using LegionBreak.Infrastructure.Spawning;
 using LegionBreak.Presentation.Movement;
 using LegionBreak.Presentation.Spawning;
@@ -36,6 +37,12 @@ namespace LegionBreak.Presentation.Composition
             // Before(베이스라인): MonoMonsterMovementSystem
             // After(Job+Burst 병렬화, 현재 활성화): JobMonsterMovementSystem
             builder.RegisterComponentInHierarchy<JobMonsterMovementSystem>().AsImplementedInterfaces();
+
+            // 3주차 몬스터 겹침 회피(separation) O(n²) vs Spatial Hashing 비교용: 씬에는
+            // 아래 둘 중 하나의 컴포넌트만 부착하고, 그에 맞는 한 줄만 활성화한다.
+            // Before(베이스라인): BruteForceMonsterSeparationSystem
+            // After(Spatial Hashing, 현재 활성화): SpatialHashMonsterSeparationSystem
+            builder.RegisterComponentInHierarchy<SpatialHashMonsterSeparationSystem>().AsImplementedInterfaces();
 
             // 풀링 Before/After 비교용: 씬에는 아래 둘 중 하나의 컴포넌트만 부착하고,
             // 그에 맞는 한 줄만 활성화한다.

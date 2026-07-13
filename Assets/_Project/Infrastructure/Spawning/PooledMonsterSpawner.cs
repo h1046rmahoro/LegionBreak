@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using LegionBreak.Application.Spawning;
 using LegionBreak.Infrastructure.Movement;
+using LegionBreak.Infrastructure.Separation;
 using UnityEngine;
 using VContainer;
 
@@ -19,11 +20,13 @@ namespace LegionBreak.Infrastructure.Spawning
         private readonly Stack<DummyMonsterView> _pool = new Stack<DummyMonsterView>();
         private Action<DummyMonsterView> _onLifetimeEndedCached;
         private IMonsterMovementSystem _movementSystem;
+        private IMonsterSeparationSystem _separationSystem;
 
         [Inject]
-        public void Construct(IMonsterMovementSystem movementSystem)
+        public void Construct(IMonsterMovementSystem movementSystem, IMonsterSeparationSystem separationSystem)
         {
             _movementSystem = movementSystem;
+            _separationSystem = separationSystem;
         }
 
         private void Awake()
@@ -43,6 +46,7 @@ namespace LegionBreak.Infrastructure.Spawning
             view.gameObject.SetActive(true);
             view.Initialize(_monsterLifetimeSeconds, _onLifetimeEndedCached);
             _movementSystem?.Register(view);
+            _separationSystem?.Register(view);
         }
 
         private DummyMonsterView CreatePooledInstance()
@@ -56,6 +60,7 @@ namespace LegionBreak.Infrastructure.Spawning
         private void OnMonsterLifetimeEnded(DummyMonsterView view)
         {
             _movementSystem?.Unregister(view);
+            _separationSystem?.Unregister(view);
             view.gameObject.SetActive(false);
             _pool.Push(view);
         }

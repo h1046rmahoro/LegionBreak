@@ -464,6 +464,37 @@ Transform:
   - {fileID: 759084629}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &985631429
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 985631430}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &985631430
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 985631429}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.75766, y: -1.98167, z: -3.4358}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1204773592
 GameObject:
   m_ObjectHideFlags: 0
@@ -600,7 +631,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22b67bd8ced09b64c9ca9d62797a2fc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: LegionBreak.Infrastructure::LegionBreak.Infrastructure.Spawning.PooledMonsterSpawner
-  _monsterLifetimeSeconds: 3
+  _monsterLifetimeSeconds: 5
   _prewarmCount: 500
 --- !u!1 &1539404204
 GameObject:
@@ -631,7 +662,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17edd042e8cb80945aefa15850b383e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: LegionBreak.Presentation::LegionBreak.Presentation.Spawning.MonsterSpawnTester
-  _spawnIntervalSeconds: 0.1
+  _spawnIntervalSeconds: 0.02
   _spawnRadius: 20
 --- !u!4 &1539404206
 Transform:
@@ -658,6 +689,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1737034497}
   - component: {fileID: 1737034496}
+  - component: {fileID: 1737034498}
   m_Layer: 0
   m_Name: 'MonsterMovementSystem '
   m_TagString: Untagged
@@ -694,6 +726,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1737034498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1737034495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e174aa614e0442d4580bab160114f63f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LegionBreak.Infrastructure::LegionBreak.Infrastructure.Separation.SpatialHashMonsterSeparationSystem
+  _separationRadius: 0.5
+  _initialCapacity: 512
+  _bucketCount: 1024
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -705,3 +752,4 @@ SceneRoots:
   - {fileID: 1509234755}
   - {fileID: 1539404206}
   - {fileID: 1737034497}
+  - {fileID: 985631430}
