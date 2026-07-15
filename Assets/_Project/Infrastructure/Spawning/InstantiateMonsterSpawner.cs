@@ -14,6 +14,8 @@ namespace LegionBreak.Infrastructure.Spawning
 
         private Action<DummyMonsterView> _onLifetimeEndedCached;
 
+        public int ActiveCount { get; private set; }
+
         private void Awake()
         {
             _onLifetimeEndedCached = OnMonsterLifetimeEnded;
@@ -25,11 +27,13 @@ namespace LegionBreak.Infrastructure.Spawning
             go.transform.position = new Vector3(position.x, 0f, position.y);
             var view = go.AddComponent<DummyMonsterView>();
             view.Initialize(_monsterLifetimeSeconds, _onLifetimeEndedCached);
+            ActiveCount++;
         }
 
         private void OnMonsterLifetimeEnded(DummyMonsterView view)
         {
             Destroy(view.gameObject);
+            ActiveCount--;
         }
     }
 }

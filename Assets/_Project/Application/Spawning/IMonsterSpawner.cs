@@ -8,6 +8,8 @@ namespace LegionBreak.Application.Spawning
     /// </summary>
     public interface IMonsterSpawner
     {
+        int ActiveCount { get; }
+
         void Spawn(Vector2 position);
     }
 }

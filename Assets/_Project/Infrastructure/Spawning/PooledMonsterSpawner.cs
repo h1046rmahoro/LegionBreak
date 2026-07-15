@@ -16,11 +16,14 @@ namespace LegionBreak.Infrastructure.Spawning
     {
         [SerializeField] private float _monsterLifetimeSeconds = 3f;
         [SerializeField] private int _prewarmCount = 500;
+        [SerializeField] private Material _monsterMaterial;
 
         private readonly Stack<DummyMonsterView> _pool = new Stack<DummyMonsterView>();
         private Action<DummyMonsterView> _onLifetimeEndedCached;
         private IMonsterMovementSystem _movementSystem;
         private IMonsterSeparationSystem _separationSystem;
+
+        public int ActiveCount { get; private set; }
 
         [Inject]
         public void Construct(IMonsterMovementSystem movementSystem, IMonsterSeparationSystem separationSystem)
@@ -47,6 +50,7 @@ namespace LegionBreak.Infrastructure.Spawning
             view.Initialize(_monsterLifetimeSeconds, _onLifetimeEndedCached);
             _movementSystem?.Register(view);
             _separationSystem?.Register(view);
+            ActiveCount++;
         }
 
         private DummyMonsterView CreatePooledInstance()
@@ -54,6 +58,27 @@ namespace LegionBreak.Infrastructure.Spawning
             var go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             go.transform.SetParent(transform);
             go.SetActive(false);
+
+            // CreatePrimitive가 기본으로 붙이는 CapsuleCollider는 이 프로젝트에서 쓰지 않는다
+            // (충돌 판정은 Physics가 아니라 SpatialHashMonsterSeparationSystem이 직접 계산).
+            // 1주차 프로파일링에서 SetActive 토글마다 이 Collider가 PhysX 브로드페이즈에
+            // 재삽입/제거되며 GC 절감분 이상의 CPU 비용을 유발했을 가능성이 의심됐다.
+            Destroy(go.GetComponent<Collider>());
+
+            var renderer = go.GetComponent<Renderer>();
+
+            // GPU Instancing이 적용되려면 모든 인스턴스가 같은 머티리얼 에셋을 참조해야 한다.
+            // .material로 접근하면 인스턴스별 복사본이 생겨 배칭이 깨지므로 반드시 sharedMaterial을 쓴다.
+            if (_monsterMaterial != null)
+            {
+                renderer.sharedMaterial = _monsterMaterial;
+            }
+
+            // Before(내장 Default-Material)는 URP와 호환되지 않는 셰이더라 그림자를 만들지
+            // 못했다. 그림자 유무가 배칭 비교의 변수로 섞이지 않도록 명시적으로 꺼서
+            // Before와 동일한 조건을 유지한다.
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+
             return go.AddComponent<DummyMonsterView>();
         }
 
@@ -63,6 +88,7 @@ namespace LegionBreak.Infrastructure.Spawning
             _separationSystem?.Unregister(view);
             view.gameObject.SetActive(false);
             _pool.Push(view);
+            ActiveCount--;
         }
     }
 }

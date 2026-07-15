@@ -53,6 +53,9 @@ namespace LegionBreak.Presentation.Composition
             // Presentation: 씬에 존재하는 입력 처리기에 위 의존성을 주입
             builder.RegisterComponentInHierarchy<PlayerInputController>();
             builder.RegisterComponentInHierarchy<MonsterSpawnTester>();
+
+            // 프로파일링 측정용 디버그 HUD: 동시 몬스터 수 표시
+            builder.RegisterComponentInHierarchy<MonsterCountDisplay>();
         }
     }
 }
