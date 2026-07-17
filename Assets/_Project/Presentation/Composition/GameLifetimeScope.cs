@@ -54,8 +54,10 @@ namespace LegionBreak.Presentation.Composition
             builder.RegisterComponentInHierarchy<PlayerInputController>();
             builder.RegisterComponentInHierarchy<MonsterSpawnTester>();
 
-            // 프로파일링 측정용 디버그 HUD: 동시 몬스터 수 표시
-            builder.RegisterComponentInHierarchy<MonsterCountDisplay>();
+            // 프로파일링 측정용 디버그 HUD: 동시 몬스터 수 표시. MVP 패턴 첫 적용 사례로,
+            // View(Presentation)와 Presenter(Application)를 분리했다. Presenter는 컨테이너가
+            // 아니라 View가 직접 생성한다(이유는 MonsterCountView 주석 참고 — 순환 의존 회피).
+            builder.RegisterComponentInHierarchy<MonsterCountView>().AsImplementedInterfaces();
         }
     }
 }
