@@ -44,6 +44,9 @@ namespace LegionBreak.Presentation.Composition
             // After(Spatial Hashing, 현재 활성화): SpatialHashMonsterSeparationSystem
             builder.RegisterComponentInHierarchy<SpatialHashMonsterSeparationSystem>().AsImplementedInterfaces();
 
+            // 몬스터 프리팹을 Addressables로 비동기 로드하는 어댑터
+            builder.RegisterComponentInHierarchy<AddressableMonsterPrefabProvider>().AsImplementedInterfaces();
+
             // 풀링 Before/After 비교용: 씬에는 아래 둘 중 하나의 컴포넌트만 부착하고,
             // 그에 맞는 한 줄만 활성화한다.
             // Before(베이스라인): InstantiateMonsterSpawner
