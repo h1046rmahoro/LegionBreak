@@ -6,6 +6,7 @@
         "LegionBreak.Data",
         "LegionBreak.Application",
         "UniTask",
+        "R3.Unity",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

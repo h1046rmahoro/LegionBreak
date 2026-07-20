@@ -1,4 +1,4 @@
-using LegionBreak.Application.Spawning;
+using LegionBreak.Application.Events;
 using LegionBreak.Application.UI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +15,7 @@ namespace LegionBreak.Presentation.Spawning
     /// IMonsterCountView(=View 자신)를 요구하는데, View↔Presenter를 둘 다 컨테이너가
     /// 만들게 하면 서로가 서로를 필요로 하는 순환 의존이 되어 VContainer가 자기 자신을
     /// 참조하는 Lazy&lt;T&gt;에 걸려 예외를 던진다(런타임에서 실제로 확인됨). View는 순환에
-    /// 관여하지 않는 IMonsterSpawner만 주입받고, 그걸로 Presenter를 직접 생성해 순환을 끊는다.
+    /// 관여하지 않는 IEventBus만 주입받고, 그걸로 Presenter를 직접 생성해 순환을 끊는다.
     /// </summary>
     public class MonsterCountView : MonoBehaviour, IMonsterCountView
     {
@@ -24,9 +24,9 @@ namespace LegionBreak.Presentation.Spawning
         private MonsterCountPresenter _presenter;
 
         [Inject]
-        public void Construct(IMonsterSpawner spawner)
+        public void Construct(IEventBus eventBus)
         {
-            _presenter = new MonsterCountPresenter(spawner, this);
+            _presenter = new MonsterCountPresenter(eventBus, this);
         }
 
         public void SetCount(int count)
@@ -40,6 +40,11 @@ namespace LegionBreak.Presentation.Spawning
         private void Update()
         {
             _presenter?.Tick(Time.deltaTime);
+        }
+
+        private void OnDestroy()
+        {
+            _presenter?.Dispose();
         }
     }
 }

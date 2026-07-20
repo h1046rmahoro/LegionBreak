@@ -1,3 +1,4 @@
+using LegionBreak.Application.Events;
 using LegionBreak.Application.Movement;
 using LegionBreak.Infrastructure.Movement;
 using LegionBreak.Infrastructure.Separation;
@@ -28,6 +29,9 @@ namespace LegionBreak.Presentation.Composition
             // Application: 유스케이스 (이동량 계산은 분기·밸런스 없는 범용 수학이라
             // Domain으로 분리하지 않고 유스케이스에 인라인되어 있음)
             builder.Register<IPlayerMoveUseCase, PlayerMoveUseCase>(Lifetime.Singleton);
+
+            // Application: 이벤트 버스 (타입 기반 발행-구독, 발행자/구독자가 서로를 모름)
+            builder.Register<IEventBus, EventBus>(Lifetime.Singleton);
 
             // Infrastructure: 씬에 존재하는 실제 구현체를 찾아 인터페이스에 바인딩
             builder.RegisterComponentInHierarchy<TransformPlayerMotor>().AsImplementedInterfaces();

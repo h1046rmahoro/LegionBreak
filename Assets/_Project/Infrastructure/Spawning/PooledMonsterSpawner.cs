@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using LegionBreak.Application.Events;
 using LegionBreak.Application.Spawning;
 using LegionBreak.Infrastructure.Movement;
 using LegionBreak.Infrastructure.Separation;
@@ -25,6 +26,7 @@ namespace LegionBreak.Infrastructure.Spawning
         private IMonsterMovementSystem _movementSystem;
         private IMonsterSeparationSystem _separationSystem;
         private IMonsterPrefabProvider _prefabProvider;
+        private IEventBus _eventBus;
         private GameObject _monsterPrefab;
 
         public int ActiveCount { get; private set; }
@@ -33,11 +35,13 @@ namespace LegionBreak.Infrastructure.Spawning
         public void Construct(
             IMonsterMovementSystem movementSystem,
             IMonsterSeparationSystem separationSystem,
-            IMonsterPrefabProvider prefabProvider)
+            IMonsterPrefabProvider prefabProvider,
+            IEventBus eventBus)
         {
             _movementSystem = movementSystem;
             _separationSystem = separationSystem;
             _prefabProvider = prefabProvider;
+            _eventBus = eventBus;
         }
 
         private void Awake()
@@ -72,6 +76,7 @@ namespace LegionBreak.Infrastructure.Spawning
             _movementSystem?.Register(view);
             _separationSystem?.Register(view);
             ActiveCount++;
+            _eventBus?.Publish(new MonsterCountChangedEvent(ActiveCount));
         }
 
         private DummyMonsterView CreatePooledInstance()
@@ -91,6 +96,7 @@ namespace LegionBreak.Infrastructure.Spawning
             view.gameObject.SetActive(false);
             _pool.Push(view);
             ActiveCount--;
+            _eventBus?.Publish(new MonsterCountChangedEvent(ActiveCount));
         }
     }
 }
