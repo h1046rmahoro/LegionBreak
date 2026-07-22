@@ -23,11 +23,11 @@ namespace LegionBreak.Infrastructure.Spawning
         [SerializeField] private int _prewarmCount = 500;
         [SerializeField] private MonsterData _monsterData;
 
-        private readonly Stack<DummyMonsterView> _pool = new Stack<DummyMonsterView>();
-        private readonly List<DummyMonsterView> _activeViews = new List<DummyMonsterView>();
-        private readonly Dictionary<DummyMonsterView, int> _activeIndexByView = new Dictionary<DummyMonsterView, int>();
-        private readonly List<DummyMonsterView> _damageQueryBuffer = new List<DummyMonsterView>();
-        private Action<DummyMonsterView> _onDeactivatedCached;
+        private readonly Stack<MonsterView> _pool = new Stack<MonsterView>();
+        private readonly List<MonsterView> _activeViews = new List<MonsterView>();
+        private readonly Dictionary<MonsterView, int> _activeIndexByView = new Dictionary<MonsterView, int>();
+        private readonly List<MonsterView> _damageQueryBuffer = new List<MonsterView>();
+        private Action<MonsterView> _onDeactivatedCached;
         private IMonsterMovementSystem _movementSystem;
         private IMonsterSeparationSystem _separationSystem;
         private IMonsterPrefabProvider _prefabProvider;
@@ -122,18 +122,18 @@ namespace LegionBreak.Infrastructure.Spawning
             return _damageQueryBuffer.Count;
         }
 
-        private DummyMonsterView CreatePooledInstance()
+        private MonsterView CreatePooledInstance()
         {
             // 머티리얼 공유(sharedMaterial), 그림자 Off, Collider 없음은 전부 프리팹 자체에
             // 미리 구성되어 있다(4주차 렌더링 최적화 결과를 그대로 유지하기 위함) — 코드에서
             // 매번 다시 설정하지 않는다.
             var go = Instantiate(_monsterPrefab, transform);
             go.SetActive(false);
-            return go.GetComponent<DummyMonsterView>();
+            return go.GetComponent<MonsterView>();
         }
 
         // 수명 만료와 피격 사망 둘 다의 콜백이라 이름을 LifetimeEnded에서 Deactivated로 바꿨다.
-        private void OnMonsterDeactivated(DummyMonsterView view)
+        private void OnMonsterDeactivated(MonsterView view)
         {
             _movementSystem?.Unregister(view);
             _separationSystem?.Unregister(view);
@@ -144,7 +144,7 @@ namespace LegionBreak.Infrastructure.Spawning
             _eventBus?.Publish(new MonsterCountChangedEvent(ActiveCount));
         }
 
-        private void RemoveFromActiveViews(DummyMonsterView view)
+        private void RemoveFromActiveViews(MonsterView view)
         {
             var index = _activeIndexByView[view];
             var lastIndex = _activeViews.Count - 1;

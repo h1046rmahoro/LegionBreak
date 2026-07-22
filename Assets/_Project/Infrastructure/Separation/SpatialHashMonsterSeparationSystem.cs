@@ -22,8 +22,8 @@ namespace LegionBreak.Infrastructure.Separation
         [SerializeField] private int _initialCapacity = 512;
         [SerializeField] private int _bucketCount = 1024;
 
-        private readonly List<DummyMonsterView> _viewsByIndex = new List<DummyMonsterView>();
-        private readonly Dictionary<DummyMonsterView, int> _indexByView = new Dictionary<DummyMonsterView, int>();
+        private readonly List<MonsterView> _viewsByIndex = new List<MonsterView>();
+        private readonly Dictionary<MonsterView, int> _indexByView = new Dictionary<MonsterView, int>();
 
         private int[] _bucketHeads;
         private int[] _next;
@@ -34,7 +34,7 @@ namespace LegionBreak.Infrastructure.Separation
             _next = new int[_initialCapacity];
         }
 
-        public void Register(DummyMonsterView view)
+        public void Register(MonsterView view)
         {
             var index = _viewsByIndex.Count;
             _indexByView[view] = index;
@@ -42,7 +42,7 @@ namespace LegionBreak.Infrastructure.Separation
             EnsureCapacity(_viewsByIndex.Count);
         }
 
-        public void Unregister(DummyMonsterView view)
+        public void Unregister(MonsterView view)
         {
             if (!_indexByView.TryGetValue(view, out var index))
             {

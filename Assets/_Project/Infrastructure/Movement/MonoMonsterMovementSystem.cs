@@ -16,7 +16,7 @@ namespace LegionBreak.Infrastructure.Movement
         [SerializeField] private float _moveSpeed = 3f;
 
         private IPlayerMotor _playerMotor;
-        private readonly List<DummyMonsterView> _activeViews = new List<DummyMonsterView>();
+        private readonly List<MonsterView> _activeViews = new List<MonsterView>();
 
         [Inject]
         public void Construct(IPlayerMotor playerMotor)
@@ -24,12 +24,12 @@ namespace LegionBreak.Infrastructure.Movement
             _playerMotor = playerMotor;
         }
 
-        public void Register(DummyMonsterView view)
+        public void Register(MonsterView view)
         {
             _activeViews.Add(view);
         }
 
-        public void Unregister(DummyMonsterView view)
+        public void Unregister(MonsterView view)
         {
             _activeViews.Remove(view);
         }

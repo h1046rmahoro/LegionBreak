@@ -10,7 +10,7 @@ namespace LegionBreak.Infrastructure.Movement
     /// </summary>
     public interface IMonsterMovementSystem
     {
-        void Register(DummyMonsterView view);
-        void Unregister(DummyMonsterView view);
+        void Register(MonsterView view);
+        void Unregister(MonsterView view);
     }
 }

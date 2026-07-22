@@ -11,7 +11,7 @@ namespace LegionBreak.Infrastructure.Separation
     /// </summary>
     public interface IMonsterSeparationSystem
     {
-        void Register(DummyMonsterView view);
-        void Unregister(DummyMonsterView view);
+        void Register(MonsterView view);
+        void Unregister(MonsterView view);
     }
 }

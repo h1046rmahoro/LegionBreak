@@ -14,14 +14,14 @@ namespace LegionBreak.Infrastructure.Separation
     {
         [SerializeField] private float _separationRadius = 0.5f;
 
-        private readonly List<DummyMonsterView> _activeViews = new List<DummyMonsterView>();
+        private readonly List<MonsterView> _activeViews = new List<MonsterView>();
 
-        public void Register(DummyMonsterView view)
+        public void Register(MonsterView view)
         {
             _activeViews.Add(view);
         }
 
-        public void Unregister(DummyMonsterView view)
+        public void Unregister(MonsterView view)
         {
             _activeViews.Remove(view);
         }

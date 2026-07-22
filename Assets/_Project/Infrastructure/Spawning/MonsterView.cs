@@ -5,18 +5,20 @@ using UnityEngine;
 namespace LegionBreak.Infrastructure.Spawning
 {
     /// <summary>
-    /// 풀링 파이프라인 검증용 더미 몬스터.
-    /// 실제 몬스터 아트/AI가 붙기 전까지 스폰-디스폰 흐름만 확인하는 스텁이며,
-    /// Addressables 프리팹 없이 프리미티브 메시로 생성된다.
+    /// 몬스터 인스턴스의 스폰-디스폰/체력 상태를 담당하는 View.
+    /// 실제 아트/AI는 아직 없어 프리미티브 메시(Addressables 프리팹)로 표현되지만,
+    /// HP 판정(MonsterHealth)을 실제로 들고 있어 더는 "더미" 스텁이 아니다
+    /// (2026-07-23: DummyMonsterView에서 개명 — HP 시스템이 붙기 전까지는 수명 타이머만
+    /// 있는 풀링 파이프라인 검증용 스텁이었으나, 이제 전투 상태를 가진 실제 컴포넌트다).
     /// </summary>
-    public class DummyMonsterView : MonoBehaviour
+    public class MonsterView : MonoBehaviour
     {
         private float _lifetimeSeconds;
         private float _elapsed;
         private MonsterHealth _health;
-        private Action<DummyMonsterView> _onDeactivated;
+        private Action<MonsterView> _onDeactivated;
 
-        public void Initialize(float lifetimeSeconds, float maxHp, Action<DummyMonsterView> onDeactivated)
+        public void Initialize(float lifetimeSeconds, float maxHp, Action<MonsterView> onDeactivated)
         {
             _lifetimeSeconds = lifetimeSeconds;
             _elapsed = 0f;

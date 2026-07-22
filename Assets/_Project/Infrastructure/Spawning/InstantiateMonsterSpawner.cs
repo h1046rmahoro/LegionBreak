@@ -17,8 +17,8 @@ namespace LegionBreak.Infrastructure.Spawning
         [SerializeField] private float _monsterLifetimeSeconds = 3f;
         [SerializeField] private MonsterData _monsterData;
 
-        private readonly List<DummyMonsterView> _activeViews = new List<DummyMonsterView>();
-        private Action<DummyMonsterView> _onDeactivatedCached;
+        private readonly List<MonsterView> _activeViews = new List<MonsterView>();
+        private Action<MonsterView> _onDeactivatedCached;
 
         public int ActiveCount { get; private set; }
 
@@ -31,7 +31,7 @@ namespace LegionBreak.Infrastructure.Spawning
         {
             var go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             go.transform.position = new Vector3(position.x, 0f, position.y);
-            var view = go.AddComponent<DummyMonsterView>();
+            var view = go.AddComponent<MonsterView>();
             view.Initialize(_monsterLifetimeSeconds, _monsterData.MaxHp, _onDeactivatedCached);
             _activeViews.Add(view);
             ActiveCount++;
@@ -39,7 +39,7 @@ namespace LegionBreak.Infrastructure.Spawning
 
         public int ApplyDamageInRange(Vector2 center, float radius, float damage)
         {
-            var hitViews = new List<DummyMonsterView>();
+            var hitViews = new List<MonsterView>();
             var sqrRadius = radius * radius;
             foreach (var view in _activeViews)
             {
@@ -59,7 +59,7 @@ namespace LegionBreak.Infrastructure.Spawning
             return hitViews.Count;
         }
 
-        private void OnMonsterDeactivated(DummyMonsterView view)
+        private void OnMonsterDeactivated(MonsterView view)
         {
             _activeViews.Remove(view);
             Destroy(view.gameObject);

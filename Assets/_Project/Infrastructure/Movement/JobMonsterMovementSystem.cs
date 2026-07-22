@@ -26,8 +26,8 @@ namespace LegionBreak.Infrastructure.Movement
 
         private IPlayerMotor _playerMotor;
         private TransformAccessArray _transformAccessArray;
-        private readonly List<DummyMonsterView> _viewsByIndex = new List<DummyMonsterView>();
-        private readonly Dictionary<DummyMonsterView, int> _indexByView = new Dictionary<DummyMonsterView, int>();
+        private readonly List<MonsterView> _viewsByIndex = new List<MonsterView>();
+        private readonly Dictionary<MonsterView, int> _indexByView = new Dictionary<MonsterView, int>();
         private JobHandle _jobHandle;
 
         [Inject]
@@ -41,7 +41,7 @@ namespace LegionBreak.Infrastructure.Movement
             _transformAccessArray = new TransformAccessArray(_initialCapacity);
         }
 
-        public void Register(DummyMonsterView view)
+        public void Register(MonsterView view)
         {
             _jobHandle.Complete();
 
@@ -50,7 +50,7 @@ namespace LegionBreak.Infrastructure.Movement
             _transformAccessArray.Add(view.transform);
         }
 
-        public void Unregister(DummyMonsterView view)
+        public void Unregister(MonsterView view)
         {
             _jobHandle.Complete();
 
