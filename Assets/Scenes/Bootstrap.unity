@@ -898,6 +898,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: LegionBreak.Infrastructure::LegionBreak.Infrastructure.Spawning.PooledMonsterSpawner
   _monsterLifetimeSeconds: 5
   _prewarmCount: 500
+  _monsterData: {fileID: 11400000, guid: a3d18193c76ccbc40ba3d228b9983dc0, type: 2}
 --- !u!1 &1539404204
 GameObject:
   m_ObjectHideFlags: 0

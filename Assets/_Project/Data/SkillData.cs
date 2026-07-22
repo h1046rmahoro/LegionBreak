@@ -14,10 +14,12 @@ namespace LegionBreak.Data
         [SerializeField] private string _displayName;
         [SerializeField] private float _baseDamage = 10f;
         [SerializeField] private float _cooldownSeconds = 1f;
+        [SerializeField] private float _range = 3f;
 
         public string SkillId => _skillId;
         public string DisplayName => _displayName;
         public float BaseDamage => _baseDamage;
         public float CooldownSeconds => _cooldownSeconds;
+        public float Range => _range;
     }
 }

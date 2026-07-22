@@ -6,15 +6,17 @@ namespace LegionBreak.Application.Skills
     /// </summary>
     public readonly struct SkillCastResult
     {
-        public static readonly SkillCastResult Failed = new SkillCastResult(false, 0f);
+        public static readonly SkillCastResult Failed = new SkillCastResult(false, 0f, 0);
 
         public bool Success { get; }
         public float Damage { get; }
+        public int HitCount { get; }
 
-        public SkillCastResult(bool success, float damage)
+        public SkillCastResult(bool success, float damage, int hitCount)
         {
             Success = success;
             Damage = damage;
+            HitCount = hitCount;
         }
     }
 }

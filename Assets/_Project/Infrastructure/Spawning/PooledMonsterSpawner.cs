@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using LegionBreak.Application.Events;
 using LegionBreak.Application.Spawning;
+using LegionBreak.Data;
 using LegionBreak.Infrastructure.Movement;
 using LegionBreak.Infrastructure.Separation;
 using UnityEngine;
@@ -20,9 +21,13 @@ namespace LegionBreak.Infrastructure.Spawning
     {
         [SerializeField] private float _monsterLifetimeSeconds = 3f;
         [SerializeField] private int _prewarmCount = 500;
+        [SerializeField] private MonsterData _monsterData;
 
         private readonly Stack<DummyMonsterView> _pool = new Stack<DummyMonsterView>();
-        private Action<DummyMonsterView> _onLifetimeEndedCached;
+        private readonly List<DummyMonsterView> _activeViews = new List<DummyMonsterView>();
+        private readonly Dictionary<DummyMonsterView, int> _activeIndexByView = new Dictionary<DummyMonsterView, int>();
+        private readonly List<DummyMonsterView> _damageQueryBuffer = new List<DummyMonsterView>();
+        private Action<DummyMonsterView> _onDeactivatedCached;
         private IMonsterMovementSystem _movementSystem;
         private IMonsterSeparationSystem _separationSystem;
         private IMonsterPrefabProvider _prefabProvider;
@@ -46,7 +51,7 @@ namespace LegionBreak.Infrastructure.Spawning
 
         private void Awake()
         {
-            _onLifetimeEndedCached = OnMonsterLifetimeEnded;
+            _onDeactivatedCached = OnMonsterDeactivated;
             PrewarmAsync().Forget();
         }
 
@@ -72,11 +77,49 @@ namespace LegionBreak.Infrastructure.Spawning
             var view = _pool.Count > 0 ? _pool.Pop() : CreatePooledInstance();
             view.transform.position = new Vector3(position.x, 0f, position.y);
             view.gameObject.SetActive(true);
-            view.Initialize(_monsterLifetimeSeconds, _onLifetimeEndedCached);
+            view.Initialize(_monsterLifetimeSeconds, _monsterData.MaxHp, _onDeactivatedCached);
             _movementSystem?.Register(view);
             _separationSystem?.Register(view);
+
+            _activeIndexByView[view] = _activeViews.Count;
+            _activeViews.Add(view);
+
             ActiveCount++;
             _eventBus?.Publish(new MonsterCountChangedEvent(ActiveCount));
+        }
+
+        // SpatialHashMonsterSeparationSystem의 그리드를 재사용하지 않고 선형 순회로 구현했다.
+        // 그 그리드는 "몬스터 기준" 이웃 조회를 매 프레임 반복하는 걸 전제로 비용을 상각하는
+        // 구조인데, 스킬 시전은 쿨다운으로 제한된 이벤트성 호출(초당 1회 수준)이라 조회 빈도
+        // 자체가 다르고, 조회 기준도 몬스터가 아니라 임의의 클릭 지점이라 쿼리 형태도 다르다.
+        // 몬스터 200~500마리 규모에서 1회성 선형 순회는 이미 충분히 싸므로, 병목이 확인되지
+        // 않은 곳에 공간 분할을 끌어오는 건 이 프로젝트의 트레이드오프 원칙(필요한 곳에만
+        // 최적화 기술 적용)과 어긋난다. 조회 빈도가 실제로 문제가 되면(예: 다중 동시 AoE) 그때
+        // 별도의 범용 공간 쿼리 서비스를 새로 만들 것이지, 분리 시스템 내부를 재사용하진 않는다.
+        public int ApplyDamageInRange(Vector2 center, float radius, float damage)
+        {
+            // 수집(읽기 전용) → 적용(TakeDamage) 2단계로 나눈다. TakeDamage가 즉시
+            // _activeViews를 스왑 제거할 수 있는데, 그 목록을 직접 순회하며 동시에
+            // 제거하면 인덱스가 꼬이므로 별도 버퍼에 모아둔 뒤 적용한다.
+            _damageQueryBuffer.Clear();
+            var sqrRadius = radius * radius;
+            for (var i = 0; i < _activeViews.Count; i++)
+            {
+                var view = _activeViews[i];
+                var position = view.transform.position;
+                var sqrDistance = (new Vector2(position.x, position.z) - center).sqrMagnitude;
+                if (sqrDistance <= sqrRadius)
+                {
+                    _damageQueryBuffer.Add(view);
+                }
+            }
+
+            foreach (var view in _damageQueryBuffer)
+            {
+                view.TakeDamage(damage);
+            }
+
+            return _damageQueryBuffer.Count;
         }
 
         private DummyMonsterView CreatePooledInstance()
@@ -89,14 +132,29 @@ namespace LegionBreak.Infrastructure.Spawning
             return go.GetComponent<DummyMonsterView>();
         }
 
-        private void OnMonsterLifetimeEnded(DummyMonsterView view)
+        // 수명 만료와 피격 사망 둘 다의 콜백이라 이름을 LifetimeEnded에서 Deactivated로 바꿨다.
+        private void OnMonsterDeactivated(DummyMonsterView view)
         {
             _movementSystem?.Unregister(view);
             _separationSystem?.Unregister(view);
+            RemoveFromActiveViews(view);
             view.gameObject.SetActive(false);
             _pool.Push(view);
             ActiveCount--;
             _eventBus?.Publish(new MonsterCountChangedEvent(ActiveCount));
+        }
+
+        private void RemoveFromActiveViews(DummyMonsterView view)
+        {
+            var index = _activeIndexByView[view];
+            var lastIndex = _activeViews.Count - 1;
+            var lastView = _activeViews[lastIndex];
+
+            _activeViews[index] = lastView;
+            _activeIndexByView[lastView] = index;
+
+            _activeViews.RemoveAt(lastIndex);
+            _activeIndexByView.Remove(view);
         }
     }
 }

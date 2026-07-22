@@ -1,6 +1,7 @@
 using LegionBreak.Application.Events;
 using LegionBreak.Application.Movement;
 using LegionBreak.Application.Skills;
+using LegionBreak.Application.Spawning;
 using LegionBreak.Data;
 using LegionBreak.Domain.Skills;
 using LegionBreak.Infrastructure.Movement;
@@ -75,7 +76,8 @@ namespace LegionBreak.Presentation.Composition
             builder.Register<IPlayerSkillCastUseCase>(
                 resolver => new PlayerSkillCastUseCase(
                     resolver.Resolve<Skill>(),
-                    resolver.Resolve<ISkillDamageCalculator>()),
+                    resolver.Resolve<ISkillDamageCalculator>(),
+                    resolver.Resolve<IMonsterSpawner>()),
                 Lifetime.Singleton);
 
             // Presentation: 씬에 존재하는 입력 처리기에 위 의존성을 주입

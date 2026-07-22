@@ -1,4 +1,5 @@
 using System;
+using LegionBreak.Domain.Monsters;
 using UnityEngine;
 
 namespace LegionBreak.Infrastructure.Spawning
@@ -12,13 +13,26 @@ namespace LegionBreak.Infrastructure.Spawning
     {
         private float _lifetimeSeconds;
         private float _elapsed;
-        private Action<DummyMonsterView> _onLifetimeEnded;
+        private MonsterHealth _health;
+        private Action<DummyMonsterView> _onDeactivated;
 
-        public void Initialize(float lifetimeSeconds, Action<DummyMonsterView> onLifetimeEnded)
+        public void Initialize(float lifetimeSeconds, float maxHp, Action<DummyMonsterView> onDeactivated)
         {
             _lifetimeSeconds = lifetimeSeconds;
-            _onLifetimeEnded = onLifetimeEnded;
             _elapsed = 0f;
+            _health = new MonsterHealth(maxHp);
+            _onDeactivated = onDeactivated;
+        }
+
+        // 수명 만료와 같은 콜백을 재사용한다 — 반환 흐름(Unregister/풀 반환)이 원인과
+        // 무관하게 동일해야 하므로 별도 사망 경로를 만들지 않는다.
+        public void TakeDamage(float amount)
+        {
+            _health.TakeDamage(amount);
+            if (_health.IsDead)
+            {
+                _onDeactivated?.Invoke(this);
+            }
         }
 
         private void Update()
@@ -26,7 +40,7 @@ namespace LegionBreak.Infrastructure.Spawning
             _elapsed += Time.deltaTime;
             if (_elapsed >= _lifetimeSeconds)
             {
-                _onLifetimeEnded?.Invoke(this);
+                _onDeactivated?.Invoke(this);
             }
         }
     }

@@ -8,7 +8,7 @@ namespace LegionBreak.Domain.Tests
         [Test]
         public void Calculate_NoCritical_ReturnsBaseDamage()
         {
-            var skill = new Skill("fireball", "Fireball", 10f, 1f);
+            var skill = new Skill("fireball", "Fireball", 10f, 1f, 3f);
             var calculator = new SkillDamageCalculator(criticalDamageMultiplier: 1.5f);
 
             var damage = calculator.Calculate(skill, isCritical: false);
@@ -19,7 +19,7 @@ namespace LegionBreak.Domain.Tests
         [Test]
         public void Calculate_Critical_AppliesCriticalMultiplier()
         {
-            var skill = new Skill("fireball", "Fireball", 10f, 1f);
+            var skill = new Skill("fireball", "Fireball", 10f, 1f, 3f);
             var calculator = new SkillDamageCalculator(criticalDamageMultiplier: 1.5f);
 
             var damage = calculator.Calculate(skill, isCritical: true);

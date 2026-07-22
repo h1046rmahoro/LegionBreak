@@ -13,6 +13,7 @@ namespace LegionBreak.Presentation.Skills
     {
         private IPlayerSkillCastUseCase _castUseCase;
         private InputAction _castAction;
+        private Camera _camera;
 
         [Inject]
         public void Construct(IPlayerSkillCastUseCase castUseCase)
@@ -22,6 +23,7 @@ namespace LegionBreak.Presentation.Skills
 
         private void Awake()
         {
+            _camera = Camera.main;
             _castAction = new InputAction("CastSkill", binding: "<Mouse>/leftButton");
             _castAction.performed += OnCastPerformed;
             _castAction.Enable();
@@ -29,15 +31,28 @@ namespace LegionBreak.Presentation.Skills
 
         private void OnCastPerformed(InputAction.CallbackContext context)
         {
-            if (_castUseCase == null)
+            if (_castUseCase == null || _camera == null)
             {
                 return;
             }
 
-            var result = _castUseCase.Execute();
+            // 클릭한 화면 좌표를 Y=0 지면 평면과 수학적으로 교차시켜 월드 좌표를 구한다
+            // (Physics.Raycast가 아니라 Plane.Raycast라 몬스터 Collider가 필요 없다 —
+            // 4주차에 제거한 미사용 Collider 최적화를 유지하기 위한 선택).
+            var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+            var groundPlane = new Plane(Vector3.up, Vector3.zero);
+            if (!groundPlane.Raycast(ray, out var enter))
+            {
+                return;
+            }
 
-            // 몬스터 피격/HP 시스템 연결 전까지 결과 확인용 로그. 다음 단계에서 실제 적용으로 대체.
-            Debug.Log(result.Success ? $"Skill cast: {result.Damage} dmg" : "Skill on cooldown");
+            var worldPoint = ray.GetPoint(enter);
+            // PooledMonsterSpawner.Spawn과 동일한 XZ 평면 컨벤션(Y=0 고정)을 그대로 따른다.
+            var targetPoint = new Vector2(worldPoint.x, worldPoint.z);
+
+            var result = _castUseCase.Execute(targetPoint);
+
+            Debug.Log(result.Success ? $"Skill cast: {result.Damage} dmg x {result.HitCount} hit(s)" : "Skill on cooldown");
         }
 
         private void Update()

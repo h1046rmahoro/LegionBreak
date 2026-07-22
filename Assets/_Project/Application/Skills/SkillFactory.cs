@@ -11,7 +11,7 @@ namespace LegionBreak.Application.Skills
     {
         public static Skill Create(SkillData data)
         {
-            return new Skill(data.SkillId, data.DisplayName, data.BaseDamage, data.CooldownSeconds);
+            return new Skill(data.SkillId, data.DisplayName, data.BaseDamage, data.CooldownSeconds, data.Range);
         }
     }
 }

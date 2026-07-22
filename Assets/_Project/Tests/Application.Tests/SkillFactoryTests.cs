@@ -20,6 +20,7 @@ namespace LegionBreak.Application.Tests
             so.FindProperty("_displayName").stringValue = "Fireball";
             so.FindProperty("_baseDamage").floatValue = 12f;
             so.FindProperty("_cooldownSeconds").floatValue = 2f;
+            so.FindProperty("_range").floatValue = 4f;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -38,6 +39,7 @@ namespace LegionBreak.Application.Tests
             Assert.AreEqual("Fireball", skill.DisplayName);
             Assert.AreEqual(12f, skill.BaseDamage);
             Assert.AreEqual(2f, skill.CooldownSeconds);
+            Assert.AreEqual(4f, skill.Range);
         }
     }
 }
