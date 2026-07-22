@@ -279,6 +279,8 @@ MonoBehaviour:
     TypeName: 
   autoRun: 1
   autoInjectGameObjects: []
+  _equippedSkillData: {fileID: 11400000, guid: b072ad787faec1e4ebd16c2baa0fcb46, type: 2}
+  _combatBalanceData: {fileID: 11400000, guid: 7d1265e9c3e228b4b94793c138fdddf4, type: 2}
 --- !u!4 &226874599
 Transform:
   m_ObjectHideFlags: 0
@@ -622,6 +624,7 @@ GameObject:
   - component: {fileID: 822607860}
   - component: {fileID: 822607859}
   - component: {fileID: 822607858}
+  - component: {fileID: 822607861}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -669,6 +672,18 @@ Transform:
   - {fileID: 759084629}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &822607861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 822607857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d82a4034051f9e4bb8623f9f77b1086, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LegionBreak.Presentation::LegionBreak.Presentation.Skills.PlayerSkillInputController
 --- !u!1 &985631429
 GameObject:
   m_ObjectHideFlags: 0

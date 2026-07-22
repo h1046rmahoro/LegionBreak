@@ -12,12 +12,27 @@ namespace LegionBreak.Domain.Skills
         public float BaseDamage { get; }
         public float CooldownSeconds { get; }
 
+        // 스킬 쿨다운 판정: 밸런스 분기가 있는 도메인 규칙이라 범용 수학과 달리
+        // Domain에 상태로 둔다 (CLAUDE.md Domain 계층 분리 기준의 명시적 예시).
+        public float RemainingCooldown { get; private set; }
+        public bool IsReady => RemainingCooldown <= 0f;
+
         public Skill(string id, string displayName, float baseDamage, float cooldownSeconds)
         {
             Id = id;
             DisplayName = displayName;
             BaseDamage = baseDamage;
             CooldownSeconds = cooldownSeconds;
+        }
+
+        public void Tick(float deltaTime)
+        {
+            RemainingCooldown = System.Math.Max(0f, RemainingCooldown - deltaTime);
+        }
+
+        public void ConsumeCooldown()
+        {
+            RemainingCooldown = CooldownSeconds;
         }
     }
 }

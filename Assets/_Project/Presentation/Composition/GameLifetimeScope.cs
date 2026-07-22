@@ -1,10 +1,15 @@
 using LegionBreak.Application.Events;
 using LegionBreak.Application.Movement;
+using LegionBreak.Application.Skills;
+using LegionBreak.Data;
+using LegionBreak.Domain.Skills;
 using LegionBreak.Infrastructure.Movement;
 using LegionBreak.Infrastructure.Separation;
 using LegionBreak.Infrastructure.Spawning;
 using LegionBreak.Presentation.Movement;
+using LegionBreak.Presentation.Skills;
 using LegionBreak.Presentation.Spawning;
+using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
@@ -24,6 +29,9 @@ namespace LegionBreak.Presentation.Composition
     /// </summary>
     public class GameLifetimeScope : LifetimeScope
     {
+        [SerializeField] private SkillData _equippedSkillData;
+        [SerializeField] private CombatBalanceData _combatBalanceData;
+
         protected override void Configure(IContainerBuilder builder)
         {
             // Application: 유스케이스 (이동량 계산은 분기·밸런스 없는 범용 수학이라
@@ -57,8 +65,22 @@ namespace LegionBreak.Presentation.Composition
             // After(풀링 적용, 현재 활성화): PooledMonsterSpawner
             builder.RegisterComponentInHierarchy<PooledMonsterSpawner>().AsImplementedInterfaces();
 
+            // Application: 스킬 시전 유스케이스. Skill은 SkillData(ScriptableObject)를
+            // SkillFactory로 변환한 인스턴스 하나를 그대로 주입해 쿨다운 상태를 들고 있게 한다
+            // (다중 스킬 슬롯은 실제 소비처가 생기기 전까진 만들지 않음).
+            builder.Register<ISkillDamageCalculator>(
+                resolver => new SkillDamageCalculator(_combatBalanceData.CriticalDamageMultiplier),
+                Lifetime.Singleton);
+            builder.RegisterInstance(SkillFactory.Create(_equippedSkillData));
+            builder.Register<IPlayerSkillCastUseCase>(
+                resolver => new PlayerSkillCastUseCase(
+                    resolver.Resolve<Skill>(),
+                    resolver.Resolve<ISkillDamageCalculator>()),
+                Lifetime.Singleton);
+
             // Presentation: 씬에 존재하는 입력 처리기에 위 의존성을 주입
             builder.RegisterComponentInHierarchy<PlayerInputController>();
+            builder.RegisterComponentInHierarchy<PlayerSkillInputController>();
             builder.RegisterComponentInHierarchy<MonsterSpawnTester>();
 
             // 프로파일링 측정용 디버그 HUD: 동시 몬스터 수 표시. MVP 패턴 첫 적용 사례로,

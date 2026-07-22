@@ -4,6 +4,7 @@
     "references": [
         "LegionBreak.Domain",
         "LegionBreak.Application",
+        "LegionBreak.Data",
         "LegionBreak.Infrastructure",
         "LegionBreak.Presentation",
         "VContainer"
