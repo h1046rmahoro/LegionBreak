@@ -9,12 +9,24 @@ namespace LegionBreak.Application.Skills
         private readonly Skill _skill;
         private readonly ISkillDamageCalculator _damageCalculator;
         private readonly IMonsterSpawner _monsterSpawner;
+        private readonly ICriticalHitJudge _criticalHitJudge;
+        private readonly IRandomProvider _randomProvider;
+        private readonly float _criticalChance;
 
-        public PlayerSkillCastUseCase(Skill skill, ISkillDamageCalculator damageCalculator, IMonsterSpawner monsterSpawner)
+        public PlayerSkillCastUseCase(
+            Skill skill,
+            ISkillDamageCalculator damageCalculator,
+            IMonsterSpawner monsterSpawner,
+            ICriticalHitJudge criticalHitJudge,
+            IRandomProvider randomProvider,
+            float criticalChance)
         {
             _skill = skill;
             _damageCalculator = damageCalculator;
             _monsterSpawner = monsterSpawner;
+            _criticalHitJudge = criticalHitJudge;
+            _randomProvider = randomProvider;
+            _criticalChance = criticalChance;
         }
 
         public void Tick(float deltaTime)
@@ -29,12 +41,12 @@ namespace LegionBreak.Application.Skills
                 return SkillCastResult.Failed;
             }
 
-            // TODO: 크리티컬 확률 판정 시스템이 생기면 false 고정을 실제 판정으로 교체
-            var damage = _damageCalculator.Calculate(_skill, isCritical: false);
+            var isCritical = _criticalHitJudge.Judge(_criticalChance, _randomProvider.NextFloat01());
+            var damage = _damageCalculator.Calculate(_skill, isCritical);
             var hitCount = _monsterSpawner.ApplyDamageInRange(targetPoint, _skill.Range, damage);
             _skill.ConsumeCooldown();
 
-            return new SkillCastResult(true, damage, hitCount);
+            return new SkillCastResult(true, damage, hitCount, isCritical);
         }
     }
 }

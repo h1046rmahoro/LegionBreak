@@ -73,11 +73,16 @@ namespace LegionBreak.Presentation.Composition
                 resolver => new SkillDamageCalculator(_combatBalanceData.CriticalDamageMultiplier),
                 Lifetime.Singleton);
             builder.RegisterInstance(SkillFactory.Create(_equippedSkillData));
+            builder.Register<ICriticalHitJudge, CriticalHitJudge>(Lifetime.Singleton);
+            builder.Register<IRandomProvider, RandomProvider>(Lifetime.Singleton);
             builder.Register<IPlayerSkillCastUseCase>(
                 resolver => new PlayerSkillCastUseCase(
                     resolver.Resolve<Skill>(),
                     resolver.Resolve<ISkillDamageCalculator>(),
-                    resolver.Resolve<IMonsterSpawner>()),
+                    resolver.Resolve<IMonsterSpawner>(),
+                    resolver.Resolve<ICriticalHitJudge>(),
+                    resolver.Resolve<IRandomProvider>(),
+                    _combatBalanceData.CriticalChance),
                 Lifetime.Singleton);
 
             // Presentation: 씬에 존재하는 입력 처리기에 위 의존성을 주입

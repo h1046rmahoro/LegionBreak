@@ -9,7 +9,9 @@ namespace LegionBreak.Data
     public sealed class CombatBalanceData : ScriptableObject
     {
         [SerializeField] private float _criticalDamageMultiplier = 1.5f;
+        [SerializeField] private float _criticalChance = 0.1f;
 
         public float CriticalDamageMultiplier => _criticalDamageMultiplier;
+        public float CriticalChance => _criticalChance;
     }
 }

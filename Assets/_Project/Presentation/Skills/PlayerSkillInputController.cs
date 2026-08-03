@@ -52,7 +52,8 @@ namespace LegionBreak.Presentation.Skills
 
             var result = _castUseCase.Execute(targetPoint);
 
-            Debug.Log(result.Success ? $"Skill cast: {result.Damage} dmg x {result.HitCount} hit(s)" : "Skill on cooldown");
+            var criticalSuffix = result.IsCritical ? " (CRIT)" : "";
+            Debug.Log(result.Success ? $"Skill cast: {result.Damage} dmg x {result.HitCount} hit(s){criticalSuffix}" : "Skill on cooldown");
         }
 
         private void Update()
