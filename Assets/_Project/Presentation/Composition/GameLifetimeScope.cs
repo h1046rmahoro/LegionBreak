@@ -2,8 +2,10 @@ using LegionBreak.Application.Events;
 using LegionBreak.Application.Movement;
 using LegionBreak.Application.Skills;
 using LegionBreak.Application.Spawning;
+using LegionBreak.Application.Waves;
 using LegionBreak.Data;
 using LegionBreak.Domain.Skills;
+using LegionBreak.Domain.Waves;
 using LegionBreak.Infrastructure.Movement;
 using LegionBreak.Infrastructure.Player;
 using LegionBreak.Infrastructure.Separation;
@@ -34,6 +36,7 @@ namespace LegionBreak.Presentation.Composition
     {
         [SerializeField] private SkillData _equippedSkillData;
         [SerializeField] private CombatBalanceData _combatBalanceData;
+        [SerializeField] private WaveData _waveData;
 
         protected override void Configure(IContainerBuilder builder)
         {
@@ -92,10 +95,27 @@ namespace LegionBreak.Presentation.Composition
                     _combatBalanceData.CriticalChance),
                 Lifetime.Singleton);
 
+            // Application: 웨이브 스폰 유스케이스. WaveData(ScriptableObject)를
+            // WaveDirectorFactory로 변환한 WaveDirector 인스턴스를 그대로 주입해 웨이브별
+            // 스폰 타이머 상태를 들고 있게 한다(Skill/SkillFactory와 동일 패턴).
+            builder.RegisterInstance(WaveDirectorFactory.Create(_waveData));
+            builder.Register<IWaveSpawnUseCase>(
+                resolver => new WaveSpawnUseCase(
+                    resolver.Resolve<WaveDirector>(),
+                    resolver.Resolve<IMonsterSpawner>(),
+                    _waveData.SpawnRadius),
+                Lifetime.Singleton);
+
             // Presentation: 씬에 존재하는 입력 처리기에 위 의존성을 주입
             builder.RegisterComponentInHierarchy<PlayerInputController>();
             builder.RegisterComponentInHierarchy<PlayerSkillInputController>();
-            builder.RegisterComponentInHierarchy<MonsterSpawnTester>();
+
+            // 실제 웨이브 진행은 WaveSpawnController가 담당한다. MonsterSpawnTester는
+            // 폐기하지 않고 남겨뒀다 — 웨이브 로직과 무관하게 순수 스폰 처리량만 보고 싶은
+            // 풀링 Before/After 재측정(6주차) 등에서 다시 쓸 수 있는 별도 스트레스 테스트
+            // 하네스이기 때문. 씬에는 WaveSpawnController와 MonsterSpawnTester 중
+            // 하나의 GameObject만 활성화한다(둘 다 켜두면 중복 스폰됨).
+            builder.RegisterComponentInHierarchy<WaveSpawnController>();
 
             // 프로파일링 측정용 디버그 HUD: 동시 몬스터 수 표시. MVP 패턴 첫 적용 사례로,
             // View(Presentation)와 Presenter(Application)를 분리했다. Presenter는 컨테이너가

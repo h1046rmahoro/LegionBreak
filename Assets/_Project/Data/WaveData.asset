@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33d0fa4fb811c0dafb71bf08c77abc9b, type: 3}
+  m_Name: WaveData
+  m_EditorClassIdentifier: LegionBreak.Data::LegionBreak.Data.WaveData
+  _waves:
+  - _startTimeSeconds: 0
+    _monsterCount: 10
+    _spawnIntervalSeconds: 1
+  - _startTimeSeconds: 8
+    _monsterCount: 20
+    _spawnIntervalSeconds: 0.5
+  - _startTimeSeconds: 16
+    _monsterCount: 40
+    _spawnIntervalSeconds: 0.3
+  - _startTimeSeconds: 24
+    _monsterCount: 80
+    _spawnIntervalSeconds: 0.15
+  - _startTimeSeconds: 32
+    _monsterCount: 150
+    _spawnIntervalSeconds: 0.08
+  _spawnRadius: 20

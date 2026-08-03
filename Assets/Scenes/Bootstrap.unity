@@ -281,6 +281,7 @@ MonoBehaviour:
   autoInjectGameObjects: []
   _equippedSkillData: {fileID: 11400000, guid: b072ad787faec1e4ebd16c2baa0fcb46, type: 2}
   _combatBalanceData: {fileID: 11400000, guid: 7d1265e9c3e228b4b94793c138fdddf4, type: 2}
+  _waveData: {fileID: 11400000, guid: 6130e321d69bf29488a6d52b5622647f, type: 2}
 --- !u!4 &226874599
 Transform:
   m_ObjectHideFlags: 0
@@ -746,7 +747,7 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
   m_Color: {r: 0.8, g: 0.1, b: 0.1, a: 1}
@@ -788,7 +789,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 55ee66ff77aa88bb99cc11dd20304050, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: LegionBreak.Presentation::LegionBreak.Presentation.GameOver.GameOverView
   _gameOverText: {fileID: 900200003}
 --- !u!1 &985631429
@@ -1022,7 +1023,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1539404205
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1217,6 +1218,50 @@ MonoBehaviour:
   _separationRadius: 0.5
   _initialCapacity: 512
   _bucketCount: 1024
+--- !u!1 &1957170265
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1957170267}
+  - component: {fileID: 1957170266}
+  m_Layer: 0
+  m_Name: WaveSpawnController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1957170266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1957170265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ec23af8f397abc468f0583fe3a83abe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LegionBreak.Presentation::LegionBreak.Presentation.Spawning.WaveSpawnController
+--- !u!4 &1957170267
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1957170265}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -8.94573, y: 11.8869, z: -18.90246}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2005698710
 GameObject:
   m_ObjectHideFlags: 0
@@ -1283,3 +1328,4 @@ SceneRoots:
   - {fileID: 610676238}
   - {fileID: 457634325}
   - {fileID: 2005698712}
+  - {fileID: 1957170267}
