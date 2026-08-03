@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using LegionBreak.Application.Movement;
 using LegionBreak.Application.Spawning;
 using LegionBreak.Data;
+using LegionBreak.Infrastructure.Movement;
 using UnityEngine;
+using VContainer;
 
 namespace LegionBreak.Infrastructure.Spawning
 {
@@ -19,8 +22,17 @@ namespace LegionBreak.Infrastructure.Spawning
 
         private readonly List<MonsterView> _activeViews = new List<MonsterView>();
         private Action<MonsterView> _onDeactivatedCached;
+        private IPlayerMotor _playerMotor;
+        private IMonsterMovementSystem _movementSystem;
 
         public int ActiveCount { get; private set; }
+
+        [Inject]
+        public void Construct(IPlayerMotor playerMotor, IMonsterMovementSystem movementSystem)
+        {
+            _playerMotor = playerMotor;
+            _movementSystem = movementSystem;
+        }
 
         private void Awake()
         {
@@ -32,7 +44,7 @@ namespace LegionBreak.Infrastructure.Spawning
             var go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             go.transform.position = new Vector3(position.x, 0f, position.y);
             var view = go.AddComponent<MonsterView>();
-            view.Initialize(_monsterLifetimeSeconds, _monsterData.MaxHp, _onDeactivatedCached);
+            view.Initialize(_monsterLifetimeSeconds, _monsterData, _playerMotor, _movementSystem, _onDeactivatedCached);
             _activeViews.Add(view);
             ActiveCount++;
         }
