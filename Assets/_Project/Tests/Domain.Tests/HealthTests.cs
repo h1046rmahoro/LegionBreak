@@ -1,14 +1,14 @@
-using LegionBreak.Domain.Monsters;
+using LegionBreak.Domain.Combat;
 using NUnit.Framework;
 
 namespace LegionBreak.Domain.Tests
 {
-    public class MonsterHealthTests
+    public class HealthTests
     {
         [Test]
         public void TakeDamage_ReducesCurrentHpByAmount()
         {
-            var health = new MonsterHealth(20f);
+            var health = new Health(20f);
 
             health.TakeDamage(5f);
 
@@ -18,7 +18,7 @@ namespace LegionBreak.Domain.Tests
         [Test]
         public void TakeDamage_DoesNotGoBelowZero()
         {
-            var health = new MonsterHealth(20f);
+            var health = new Health(20f);
 
             health.TakeDamage(100f);
 
@@ -28,7 +28,7 @@ namespace LegionBreak.Domain.Tests
         [Test]
         public void IsDead_WhenCurrentHpReachesZero_IsTrue()
         {
-            var health = new MonsterHealth(20f);
+            var health = new Health(20f);
 
             health.TakeDamage(20f);
 
@@ -38,7 +38,7 @@ namespace LegionBreak.Domain.Tests
         [Test]
         public void IsDead_BeforeAnyDamage_IsFalse()
         {
-            var health = new MonsterHealth(20f);
+            var health = new Health(20f);
 
             Assert.IsFalse(health.IsDead);
         }

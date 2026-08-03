@@ -5,7 +5,7 @@ namespace LegionBreak.Domain.Monsters
     /// <summary>
     /// 몬스터 상태 판단(Idle/Chase/Attack/Dead)을 담당하는 순수 도메인 규칙.
     /// Skill의 쿨다운 게이트(RemainingCooldown/IsReady/Tick/ConsumeCooldown)와 같은 이유로
-    /// Domain에 두되, MonsterHealth/Skill과 마찬가지로 엔티티 상태 홀더라 인터페이스 없이
+    /// Domain에 두되, Health/Skill과 마찬가지로 엔티티 상태 홀더라 인터페이스 없이
     /// concrete 클래스로 둔다(ICriticalHitJudge류의 "교체 가능한 알고리즘"과는 다름).
     /// AttackRange는 ChaseRange 이하여야 한다는 전제를 가진다(검증 코드는 넣지 않음 — YAGNI).
     /// </summary>

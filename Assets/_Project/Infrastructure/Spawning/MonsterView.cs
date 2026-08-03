@@ -1,6 +1,8 @@
 using System;
 using LegionBreak.Application.Movement;
+using LegionBreak.Application.Player;
 using LegionBreak.Data;
+using LegionBreak.Domain.Combat;
 using LegionBreak.Domain.Monsters;
 using LegionBreak.Infrastructure.Movement;
 using UnityEngine;
@@ -10,7 +12,7 @@ namespace LegionBreak.Infrastructure.Spawning
     /// <summary>
     /// 몬스터 인스턴스의 스폰-디스폰/체력/AI 상태를 담당하는 View.
     /// 실제 아트는 아직 없어 프리미티브 메시(Addressables 프리팹)로 표현되지만,
-    /// HP 판정(MonsterHealth)과 AI 상태(MonsterAI)를 실제로 들고 있어 더는 "더미" 스텁이 아니다
+    /// HP 판정(Health, 플레이어와 공유하는 도메인 클래스)과 AI 상태(MonsterAI)를 실제로 들고 있어 더는 "더미" 스텁이 아니다
     /// (2026-07-23: DummyMonsterView에서 개명 — HP 시스템이 붙기 전까지는 수명 타이머만
     /// 있는 풀링 파이프라인 검증용 스텁이었으나, 이제 전투 상태를 가진 실제 컴포넌트다).
     /// </summary>
@@ -18,9 +20,11 @@ namespace LegionBreak.Infrastructure.Spawning
     {
         private float _lifetimeSeconds;
         private float _elapsed;
-        private MonsterHealth _health;
+        private Health _health;
         private MonsterAI _ai;
+        private float _attackDamage;
         private IPlayerMotor _playerMotor;
+        private IPlayerHealth _playerHealth;
         private IMonsterMovementSystem _movementSystem;
         private Action<MonsterView> _onDeactivated;
 
@@ -28,14 +32,16 @@ namespace LegionBreak.Infrastructure.Spawning
         // 타이머(사망 시스템이 생기기 전까지의 테스트 하네스 값)라 별도 파라미터로 받는다.
         public void Initialize(
             float lifetimeSeconds, MonsterData data,
-            IPlayerMotor playerMotor, IMonsterMovementSystem movementSystem,
+            IPlayerMotor playerMotor, IPlayerHealth playerHealth, IMonsterMovementSystem movementSystem,
             Action<MonsterView> onDeactivated)
         {
             _lifetimeSeconds = lifetimeSeconds;
             _elapsed = 0f;
-            _health = new MonsterHealth(data.MaxHp);
+            _health = new Health(data.MaxHp);
             _ai = new MonsterAI(data.ChaseRange, data.AttackRange, data.AttackCooldownSeconds);
+            _attackDamage = data.AttackDamage;
             _playerMotor = playerMotor;
+            _playerHealth = playerHealth;
             _movementSystem = movementSystem;
             _onDeactivated = onDeactivated;
         }
@@ -86,8 +92,13 @@ namespace LegionBreak.Infrastructure.Spawning
                 }
             }
 
-            // TryConsumeAttack()은 아직 호출하지 않는다 — 플레이어 HP/피격 시스템이 없어
-            // 실제 데미지를 적용할 소비처가 없기 때문(MonsterAI.cs 참고).
+            // MonsterAI.cs의 게이트 설명대로 연결한다: Attack 상태에서 쿨다운이 돌아온
+            // 프레임에만 TryConsumeAttack()이 true를 반환하므로, 상태 전이 여부와 무관하게
+            // 매 프레임 호출해도 데미지가 중복 적용되지 않는다.
+            if (currentState == MonsterAIState.Attack && _ai.TryConsumeAttack())
+            {
+                _playerHealth.TakeDamage(_attackDamage);
+            }
         }
     }
 }

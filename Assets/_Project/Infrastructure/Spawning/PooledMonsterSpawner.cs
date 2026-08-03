@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using LegionBreak.Application.Events;
 using LegionBreak.Application.Movement;
+using LegionBreak.Application.Player;
 using LegionBreak.Application.Spawning;
 using LegionBreak.Data;
 using LegionBreak.Infrastructure.Movement;
@@ -34,6 +35,7 @@ namespace LegionBreak.Infrastructure.Spawning
         private IMonsterPrefabProvider _prefabProvider;
         private IEventBus _eventBus;
         private IPlayerMotor _playerMotor;
+        private IPlayerHealth _playerHealth;
         private GameObject _monsterPrefab;
 
         public int ActiveCount { get; private set; }
@@ -44,13 +46,15 @@ namespace LegionBreak.Infrastructure.Spawning
             IMonsterSeparationSystem separationSystem,
             IMonsterPrefabProvider prefabProvider,
             IEventBus eventBus,
-            IPlayerMotor playerMotor)
+            IPlayerMotor playerMotor,
+            IPlayerHealth playerHealth)
         {
             _movementSystem = movementSystem;
             _separationSystem = separationSystem;
             _prefabProvider = prefabProvider;
             _eventBus = eventBus;
             _playerMotor = playerMotor;
+            _playerHealth = playerHealth;
         }
 
         private void Awake()
@@ -83,7 +87,7 @@ namespace LegionBreak.Infrastructure.Spawning
             view.gameObject.SetActive(true);
             // 이동 등록은 더 이상 여기서 하지 않는다 — MonsterView가 Idle→Chase 전이 시점에
             // 스스로 _movementSystem.Register를 호출한다(AI 상태 기반 이동 On/Off).
-            view.Initialize(_monsterLifetimeSeconds, _monsterData, _playerMotor, _movementSystem, _onDeactivatedCached);
+            view.Initialize(_monsterLifetimeSeconds, _monsterData, _playerMotor, _playerHealth, _movementSystem, _onDeactivatedCached);
             _separationSystem?.Register(view);
 
             _activeIndexByView[view] = _activeViews.Count;

@@ -1,3 +1,4 @@
+using LegionBreak.Application.Player;
 using LegionBreak.Application.Skills;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -12,13 +13,15 @@ namespace LegionBreak.Presentation.Skills
     public class PlayerSkillInputController : MonoBehaviour
     {
         private IPlayerSkillCastUseCase _castUseCase;
+        private IPlayerHealth _playerHealth;
         private InputAction _castAction;
         private Camera _camera;
 
         [Inject]
-        public void Construct(IPlayerSkillCastUseCase castUseCase)
+        public void Construct(IPlayerSkillCastUseCase castUseCase, IPlayerHealth playerHealth)
         {
             _castUseCase = castUseCase;
+            _playerHealth = playerHealth;
         }
 
         private void Awake()
@@ -31,7 +34,7 @@ namespace LegionBreak.Presentation.Skills
 
         private void OnCastPerformed(InputAction.CallbackContext context)
         {
-            if (_castUseCase == null || _camera == null)
+            if (_castUseCase == null || _camera == null || _playerHealth.IsDead)
             {
                 return;
             }

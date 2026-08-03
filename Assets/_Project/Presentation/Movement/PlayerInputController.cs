@@ -1,4 +1,5 @@
 using LegionBreak.Application.Movement;
+using LegionBreak.Application.Player;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using VContainer;
@@ -12,12 +13,14 @@ namespace LegionBreak.Presentation.Movement
     public class PlayerInputController : MonoBehaviour
     {
         private IPlayerMoveUseCase _moveUseCase;
+        private IPlayerHealth _playerHealth;
         private InputAction _moveAction;
 
         [Inject]
-        public void Construct(IPlayerMoveUseCase moveUseCase)
+        public void Construct(IPlayerMoveUseCase moveUseCase, IPlayerHealth playerHealth)
         {
             _moveUseCase = moveUseCase;
+            _playerHealth = playerHealth;
         }
 
         private void Awake()
@@ -33,7 +36,7 @@ namespace LegionBreak.Presentation.Movement
 
         private void Update()
         {
-            if (_moveUseCase == null)
+            if (_moveUseCase == null || _playerHealth.IsDead)
             {
                 return;
             }

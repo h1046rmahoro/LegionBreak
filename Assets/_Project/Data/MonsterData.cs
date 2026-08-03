@@ -18,10 +18,12 @@ namespace LegionBreak.Data
         // AttackRange는 ChaseRange 이하여야 한다.
         [SerializeField] private float _attackRange = 1.5f;
         [SerializeField] private float _attackCooldownSeconds = 1f;
+        [SerializeField] private float _attackDamage = 5f;
 
         public float MaxHp => _maxHp;
         public float ChaseRange => _chaseRange;
         public float AttackRange => _attackRange;
         public float AttackCooldownSeconds => _attackCooldownSeconds;
+        public float AttackDamage => _attackDamage;
     }
 }

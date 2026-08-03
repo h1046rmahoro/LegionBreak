@@ -5,8 +5,10 @@ using LegionBreak.Application.Spawning;
 using LegionBreak.Data;
 using LegionBreak.Domain.Skills;
 using LegionBreak.Infrastructure.Movement;
+using LegionBreak.Infrastructure.Player;
 using LegionBreak.Infrastructure.Separation;
 using LegionBreak.Infrastructure.Spawning;
+using LegionBreak.Presentation.GameOver;
 using LegionBreak.Presentation.Movement;
 using LegionBreak.Presentation.Skills;
 using LegionBreak.Presentation.Spawning;
@@ -44,6 +46,11 @@ namespace LegionBreak.Presentation.Composition
 
             // Infrastructure: 씬에 존재하는 실제 구현체를 찾아 인터페이스에 바인딩
             builder.RegisterComponentInHierarchy<TransformPlayerMotor>().AsImplementedInterfaces();
+
+            // 플레이어 체력. TransformPlayerMotor와 같은 패턴 — 씬의 Player GameObject에
+            // 부착된 컴포넌트를 찾아 IPlayerHealth에 바인딩한다. 몬스터 Attack 상태의
+            // TryConsumeAttack() 데미지를 실제로 받는 소비처.
+            builder.RegisterComponentInHierarchy<PlayerHealthController>().AsImplementedInterfaces();
 
             // 이동/타겟팅 Job 병렬화 Before/After 비교용: 씬에는 아래 둘 중 하나의
             // 컴포넌트만 부착하고, 그에 맞는 한 줄만 활성화한다.
@@ -94,6 +101,11 @@ namespace LegionBreak.Presentation.Composition
             // View(Presentation)와 Presenter(Application)를 분리했다. Presenter는 컨테이너가
             // 아니라 View가 직접 생성한다(이유는 MonsterCountView 주석 참고 — 순환 의존 회피).
             builder.RegisterComponentInHierarchy<MonsterCountView>().AsImplementedInterfaces();
+
+            // 플레이어 사망 시 "GAME OVER" 텍스트만 노출하는 View. IPlayerHealth.IsDead를
+            // 직접 폴링하므로(이유는 GameOverView 주석 참고) 별도 Presenter/등록 없이
+            // 컴포넌트만 씬에서 찾아 의존성을 주입한다.
+            builder.RegisterComponentInHierarchy<GameOverView>();
         }
     }
 }
