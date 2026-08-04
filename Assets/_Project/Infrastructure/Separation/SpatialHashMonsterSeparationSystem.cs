@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using LegionBreak.Infrastructure.Pathfinding;
 using LegionBreak.Infrastructure.Spawning;
 using UnityEngine;
+using VContainer;
 
 namespace LegionBreak.Infrastructure.Separation
 {
@@ -15,6 +17,17 @@ namespace LegionBreak.Infrastructure.Separation
     /// List 재구성 과정에서 GC Alloc이 반복 발생할 위험이 있다(1주차에서 확인한 Collider
     /// 재삽입 비용과 유사한 함정). 대신 버킷 헤드(int[])+ 인덱스 기반 연결 리스트(int[])로
     /// 그리드를 구성해, 초기 용량 확보 이후에는 매 프레임 할당이 없다.
+    ///
+    /// (5주차 후속) 몬스터 밀도가 높아지면 이 push가 몬스터를 장애물 칸 안으로 밀어 넣어
+    /// 장애물을 뚫고 지나가는 문제가 있었다 — 이 시스템은 원래 몬스터-몬스터 거리만 보고
+    /// transform.position을 옮길 뿐 WalkableGrid를 전혀 몰랐기 때문이다. IWalkableGridProvider로
+    /// FlowFieldMonsterMovementSystem이 베이크한 그리드를 주입받아, push 결과 위치가
+    /// walkable이 아니면 그 push를 적용하지 않도록 막는다(반대쪽 몬스터는 그대로 밀림 —
+    /// 벽 쪽 몬스터가 벽에 눌려 멈추는 것과 동일한 결과). 그리드 베이크/해제 소유권은 여전히
+    /// FlowFieldMonsterMovementSystem에 있고, 여기서는 Update()에서 매 프레임 참조만 읽는다
+    /// (생성자 시점에 캐시하지 않는 이유: Unity의 Awake 호출 순서는 컴포넌트 간에 보장되지
+    /// 않아 이 시스템의 Construct가 먼저 실행되면 그리드가 아직 베이크되지 않았을 수 있다.
+    /// 반면 Update는 씬의 모든 Awake가 끝난 뒤에만 시작되므로 항상 안전하다).
     /// </summary>
     public class SpatialHashMonsterSeparationSystem : MonoBehaviour, IMonsterSeparationSystem
     {
@@ -27,6 +40,13 @@ namespace LegionBreak.Infrastructure.Separation
 
         private int[] _bucketHeads;
         private int[] _next;
+        private IWalkableGridProvider _gridProvider;
+
+        [Inject]
+        public void Construct(IWalkableGridProvider gridProvider)
+        {
+            _gridProvider = gridProvider;
+        }
 
         private void Awake()
         {
@@ -80,6 +100,9 @@ namespace LegionBreak.Infrastructure.Separation
                 return;
             }
 
+            // 캐시하지 않고 매 프레임 Update()에서 읽는 이유는 클래스 주석 참고.
+            var grid = _gridProvider?.Grid;
+
             var cellSize = _separationRadius * 2f;
             var cellSizeInv = 1f / cellSize;
             var minDistanceSq = cellSize * cellSize;
@@ -130,13 +153,24 @@ namespace LegionBreak.Infrastructure.Separation
                                     var pushX = deltaX / distance * overlap * 0.5f;
                                     var pushZ = deltaZ / distance * overlap * 0.5f;
 
-                                    posA.x += pushX;
-                                    posA.z += pushZ;
-                                    posB.x -= pushX;
-                                    posB.z -= pushZ;
+                                    // 장애물 칸으로 밀어 넣는 push는 적용하지 않는다(반대쪽은
+                                    // 그대로 밀림) — 벽 쪽 몬스터가 벽에 눌려 멈추는 결과가 되어
+                                    // 겹침은 완전히 해소되지 않을 수 있지만, 장애물을 뚫고
+                                    // 지나가는 것보다는 낫다.
+                                    var candidateA = new Vector3(posA.x + pushX, posA.y, posA.z + pushZ);
+                                    var candidateB = new Vector3(posB.x - pushX, posB.y, posB.z - pushZ);
 
-                                    transformA.position = posA;
-                                    transformB.position = posB;
+                                    if (IsWalkable(grid, candidateA))
+                                    {
+                                        posA = candidateA;
+                                        transformA.position = posA;
+                                    }
+
+                                    if (IsWalkable(grid, candidateB))
+                                    {
+                                        posB = candidateB;
+                                        transformB.position = posB;
+                                    }
                                 }
                             }
 
@@ -145,6 +179,24 @@ namespace LegionBreak.Infrastructure.Separation
                     }
                 }
             }
+        }
+
+        // grid가 없거나(그리드를 공유하는 FlowFieldMonsterMovementSystem이 씬에 없는 경우 —
+        // 예: JobMonsterMovementSystem으로 되돌린 경우) 격자 범위 밖이면 항상 walkable로
+        // 간주한다. 장애물 정보가 없는 상태에서 겹침 회피 자체를 막을 이유가 없기 때문이다.
+        private static bool IsWalkable(WalkableGrid grid, Vector3 worldPos)
+        {
+            if (grid == null)
+            {
+                return true;
+            }
+
+            if (!grid.TryWorldToCell(new Vector2(worldPos.x, worldPos.z), out var cellX, out var cellZ))
+            {
+                return true;
+            }
+
+            return grid.IsWalkable(cellX, cellZ);
         }
 
         private int HashCell(int cellX, int cellZ)

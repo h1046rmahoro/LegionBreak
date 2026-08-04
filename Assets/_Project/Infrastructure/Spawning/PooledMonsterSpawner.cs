@@ -21,7 +21,6 @@ namespace LegionBreak.Infrastructure.Spawning
     /// </summary>
     public class PooledMonsterSpawner : MonoBehaviour, IMonsterSpawner
     {
-        [SerializeField] private float _monsterLifetimeSeconds = 3f;
         [SerializeField] private int _prewarmCount = 500;
         [SerializeField] private MonsterData _monsterData;
 
@@ -87,7 +86,7 @@ namespace LegionBreak.Infrastructure.Spawning
             view.gameObject.SetActive(true);
             // 이동 등록은 더 이상 여기서 하지 않는다 — MonsterView가 Idle→Chase 전이 시점에
             // 스스로 _movementSystem.Register를 호출한다(AI 상태 기반 이동 On/Off).
-            view.Initialize(_monsterLifetimeSeconds, _monsterData, _playerMotor, _playerHealth, _movementSystem, _onDeactivatedCached);
+            view.Initialize(_monsterData, _playerMotor, _playerHealth, _movementSystem, _onDeactivatedCached);
             _separationSystem?.Register(view);
 
             _activeIndexByView[view] = _activeViews.Count;

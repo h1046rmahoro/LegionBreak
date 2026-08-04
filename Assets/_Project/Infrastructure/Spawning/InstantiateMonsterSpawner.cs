@@ -18,7 +18,6 @@ namespace LegionBreak.Infrastructure.Spawning
     /// </summary>
     public class InstantiateMonsterSpawner : MonoBehaviour, IMonsterSpawner
     {
-        [SerializeField] private float _monsterLifetimeSeconds = 3f;
         [SerializeField] private MonsterData _monsterData;
 
         private readonly List<MonsterView> _activeViews = new List<MonsterView>();
@@ -47,7 +46,7 @@ namespace LegionBreak.Infrastructure.Spawning
             var go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             go.transform.position = new Vector3(position.x, 0f, position.y);
             var view = go.AddComponent<MonsterView>();
-            view.Initialize(_monsterLifetimeSeconds, _monsterData, _playerMotor, _playerHealth, _movementSystem, _onDeactivatedCached);
+            view.Initialize(_monsterData, _playerMotor, _playerHealth, _movementSystem, _onDeactivatedCached);
             _activeViews.Add(view);
             ActiveCount++;
         }

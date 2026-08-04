@@ -18,8 +18,6 @@ namespace LegionBreak.Infrastructure.Spawning
     /// </summary>
     public class MonsterView : MonoBehaviour
     {
-        private float _lifetimeSeconds;
-        private float _elapsed;
         private Health _health;
         private MonsterAI _ai;
         private float _attackDamage;
@@ -28,15 +26,11 @@ namespace LegionBreak.Infrastructure.Spawning
         private IMonsterMovementSystem _movementSystem;
         private Action<MonsterView> _onDeactivated;
 
-        // lifetimeSeconds는 MonsterData(밸런스 데이터)가 아니라 스포너가 소유한 임시 수명
-        // 타이머(사망 시스템이 생기기 전까지의 테스트 하네스 값)라 별도 파라미터로 받는다.
         public void Initialize(
-            float lifetimeSeconds, MonsterData data,
+            MonsterData data,
             IPlayerMotor playerMotor, IPlayerHealth playerHealth, IMonsterMovementSystem movementSystem,
             Action<MonsterView> onDeactivated)
         {
-            _lifetimeSeconds = lifetimeSeconds;
-            _elapsed = 0f;
             _health = new Health(data.MaxHp);
             _ai = new MonsterAI(data.ChaseRange, data.AttackRange, data.AttackCooldownSeconds);
             _attackDamage = data.AttackDamage;
@@ -46,8 +40,6 @@ namespace LegionBreak.Infrastructure.Spawning
             _onDeactivated = onDeactivated;
         }
 
-        // 수명 만료와 같은 콜백을 재사용한다 — 반환 흐름(Unregister/풀 반환)이 원인과
-        // 무관하게 동일해야 하므로 별도 사망 경로를 만들지 않는다.
         // 주의: TakeDamage는 사망 즉시 동기적으로 _onDeactivated를 호출해 비활성화하므로,
         // MonsterAIState.Dead는 실제로 Update()를 통해 관측되지 않는다(Domain 단위 테스트로는
         // 검증되지만 이 배선에서는 소비되지 않음). 사망 연출을 붙일 때 _onDeactivated 호출 전
@@ -63,13 +55,6 @@ namespace LegionBreak.Infrastructure.Spawning
 
         private void Update()
         {
-            _elapsed += Time.deltaTime;
-            if (_elapsed >= _lifetimeSeconds)
-            {
-                _onDeactivated?.Invoke(this);
-                return;
-            }
-
             // previousState는 _ai.Tick 호출 "이전"에 반드시 읽어야 한다(Tick 내부에서 갱신됨).
             var previousState = _ai.CurrentState;
             var position = transform.position;

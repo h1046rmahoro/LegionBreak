@@ -55,11 +55,13 @@ namespace LegionBreak.Presentation.Composition
             // TryConsumeAttack() 데미지를 실제로 받는 소비처.
             builder.RegisterComponentInHierarchy<PlayerHealthController>().AsImplementedInterfaces();
 
-            // 이동/타겟팅 Job 병렬화 Before/After 비교용: 씬에는 아래 둘 중 하나의
-            // 컴포넌트만 부착하고, 그에 맞는 한 줄만 활성화한다.
-            // Before(베이스라인): MonoMonsterMovementSystem
-            // After(Job+Burst 병렬화, 현재 활성화): JobMonsterMovementSystem
-            builder.RegisterComponentInHierarchy<JobMonsterMovementSystem>().AsImplementedInterfaces();
+            // 이동/타겟팅 Before/After 비교용: 씬에는 아래 중 하나의 컴포넌트만 부착하고,
+            // 그에 맞는 한 줄만 활성화한다.
+            // Before(베이스라인, 직선 Seek): MonoMonsterMovementSystem / JobMonsterMovementSystem
+            // After(5주차, 장애물 우회 FlowField 경로, 현재 활성화): FlowFieldMonsterMovementSystem
+            // Job+Burst 병렬화 자체는 JobMonsterMovementSystem 단계에서 이미 검증했으므로(2주차),
+            // 이번 교체의 비교 대상은 "직선 Seek vs 장애물 우회 경로"이지 병렬화 여부가 아니다.
+            builder.RegisterComponentInHierarchy<FlowFieldMonsterMovementSystem>().AsImplementedInterfaces();
 
             // 3주차 몬스터 겹침 회피(separation) O(n²) vs Spatial Hashing 비교용: 씬에는
             // 아래 둘 중 하나의 컴포넌트만 부착하고, 그에 맞는 한 줄만 활성화한다.
