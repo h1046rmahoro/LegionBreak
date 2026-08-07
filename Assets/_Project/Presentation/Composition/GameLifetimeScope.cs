@@ -8,7 +8,6 @@ using LegionBreak.Domain.Skills;
 using LegionBreak.Domain.Waves;
 using LegionBreak.Infrastructure.Movement;
 using LegionBreak.Infrastructure.Player;
-using LegionBreak.Infrastructure.Separation;
 using LegionBreak.Infrastructure.Spawning;
 using LegionBreak.Presentation.GameOver;
 using LegionBreak.Presentation.Movement;
@@ -55,19 +54,16 @@ namespace LegionBreak.Presentation.Composition
             // TryConsumeAttack() 데미지를 실제로 받는 소비처.
             builder.RegisterComponentInHierarchy<PlayerHealthController>().AsImplementedInterfaces();
 
-            // 이동/타겟팅 Before/After 비교용: 씬에는 아래 중 하나의 컴포넌트만 부착하고,
-            // 그에 맞는 한 줄만 활성화한다.
-            // Before(베이스라인, 직선 Seek): MonoMonsterMovementSystem / JobMonsterMovementSystem
-            // After(5주차, 장애물 우회 FlowField 경로, 현재 활성화): FlowFieldMonsterMovementSystem
-            // Job+Burst 병렬화 자체는 JobMonsterMovementSystem 단계에서 이미 검증했으므로(2주차),
-            // 이번 교체의 비교 대상은 "직선 Seek vs 장애물 우회 경로"이지 병렬화 여부가 아니다.
-            builder.RegisterComponentInHierarchy<FlowFieldMonsterMovementSystem>().AsImplementedInterfaces();
-
-            // 3주차 몬스터 겹침 회피(separation) O(n²) vs Spatial Hashing 비교용: 씬에는
-            // 아래 둘 중 하나의 컴포넌트만 부착하고, 그에 맞는 한 줄만 활성화한다.
-            // Before(베이스라인): BruteForceMonsterSeparationSystem
-            // After(Spatial Hashing, 현재 활성화): SpatialHashMonsterSeparationSystem
-            builder.RegisterComponentInHierarchy<SpatialHashMonsterSeparationSystem>().AsImplementedInterfaces();
+            // 이동(FlowFieldMonsterMovementSystem)/겹침회피(SpatialHashMonsterSeparationSystem)
+            // Before/After 이력: 2주차(Job+Burst), 3주차(Spatial Hashing), 5주차(장애물 우회
+            // FlowField)를 각각 별도 컴포넌트로 검증해왔다. 7주차부터는 두 시스템을
+            // MonsterMovementResolver 하나로 합쳐 등록한다 — 겹침 회피를 별도 Job으로
+            // 전환하면 이동 Job과 같은 몬스터 Transform 집합에 서로 모르는 채 동시에 쓰기
+            // Job을 스케줄링하게 되어 레이스 컨디션 위험이 생기므로, 하나의
+            // TransformAccessArray를 공유하고 JobHandle 의존성으로 순서를 체이닝하기 위함
+            // (자세한 이유는 MonsterMovementResolver 클래스 주석 참고). 이전 단계 컴포넌트들은
+            // 삭제하지 않고 씬에 비활성 상태로 남겨 Before 대조군으로 보존한다.
+            builder.RegisterComponentInHierarchy<MonsterMovementResolver>().AsImplementedInterfaces();
 
             // 몬스터 프리팹을 Addressables로 비동기 로드하는 어댑터
             builder.RegisterComponentInHierarchy<AddressableMonsterPrefabProvider>().AsImplementedInterfaces();

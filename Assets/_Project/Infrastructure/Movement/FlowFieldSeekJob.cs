@@ -23,6 +23,11 @@ namespace LegionBreak.Infrastructure.Movement
     {
         [ReadOnly] public NativeArray<float2> Directions;
         [ReadOnly] public NativeArray<bool> Walkable;
+        // MonsterMovementResolver가 겹침 회피(MonsterSeparationJob)와 TransformAccessArray를
+        // 공유하면서 도입한 필드다. 겹침 회피는 스폰(Idle) 시점부터 등록되지만 이동은 AI가
+        // Chase로 전이할 때만 켜져야 하므로(Idle/Attack 상태 몬스터는 이동 정지), 배열 자체를
+        // 분리하는 대신 인덱스별로 이동 여부만 플래그로 걸러낸다.
+        [ReadOnly] public NativeArray<bool> MovementActive;
         public float2 GridOrigin;
         public float CellSize;
         public int GridWidth;
@@ -33,6 +38,11 @@ namespace LegionBreak.Infrastructure.Movement
 
         public void Execute(int index, TransformAccess transform)
         {
+            if (!MovementActive[index])
+            {
+                return;
+            }
+
             var current = transform.position;
             var currentXZ = new float2(current.x, current.z);
             var direction = SampleWalkableDirection(currentXZ);

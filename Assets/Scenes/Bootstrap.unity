@@ -838,6 +838,60 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 759084628}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &819365887
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 819365889}
+  - component: {fileID: 819365888}
+  m_Layer: 0
+  m_Name: 'MonsterMovementResolver '
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &819365888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 819365887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35a06c18bf3698645a4d094addc8cff0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LegionBreak.Infrastructure::LegionBreak.Infrastructure.Movement.MonsterMovementResolver
+  _moveSpeed: 3
+  _initialCapacity: 500
+  _gridHalfExtent: 40
+  _cellSize: 1
+  _obstacleLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  _regenerateInterval: 0.2
+  _separationRadius: 0.5
+  _bucketCount: 1024
+--- !u!4 &819365889
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 819365887}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.37821, y: 0.97793, z: -0.45029}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &822607857
 GameObject:
   m_ObjectHideFlags: 0
@@ -851,6 +905,7 @@ GameObject:
   - component: {fileID: 822607858}
   - component: {fileID: 822607861}
   - component: {fileID: 900123456}
+  - component: {fileID: 900123457}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -923,6 +978,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: LegionBreak.Infrastructure::LegionBreak.Infrastructure.Player.PlayerHealthController
   _playerData: {fileID: 11400000, guid: dd44ee55ff66aa11bb22cc3310203040, type: 2}
+--- !u!135 &900123457
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 822607857}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 25
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &900200001
 GameObject:
   m_ObjectHideFlags: 0
@@ -1228,7 +1304,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22b67bd8ced09b64c9ca9d62797a2fc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: LegionBreak.Infrastructure::LegionBreak.Infrastructure.Spawning.PooledMonsterSpawner
-  _monsterLifetimeSeconds: 5
   _prewarmCount: 500
   _monsterData: {fileID: 11400000, guid: a3d18193c76ccbc40ba3d228b9983dc0, type: 2}
 --- !u!1 &1524775807
@@ -1509,7 +1584,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1737034497
 Transform:
   m_ObjectHideFlags: 0
@@ -1674,3 +1749,4 @@ SceneRoots:
   - {fileID: 566133512}
   - {fileID: 1524775811}
   - {fileID: 588418129}
+  - {fileID: 819365889}
