@@ -1434,7 +1434,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1539404205
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1449,6 +1449,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: LegionBreak.Presentation::LegionBreak.Presentation.Spawning.MonsterSpawnTester
   _spawnIntervalSeconds: 0.02
   _spawnRadius: 20
+  _targetCount: 500
 --- !u!4 &1539404206
 Transform:
   m_ObjectHideFlags: 0
@@ -1651,7 +1652,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1957170266
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1739,13 +1740,13 @@ SceneRoots:
   - {fileID: 822607860}
   - {fileID: 1509234755}
   - {fileID: 1539404206}
+  - {fileID: 1957170267}
   - {fileID: 1737034497}
   - {fileID: 985631430}
   - {fileID: 1615145824}
   - {fileID: 610676238}
   - {fileID: 457634325}
   - {fileID: 2005698712}
-  - {fileID: 1957170267}
   - {fileID: 566133512}
   - {fileID: 1524775811}
   - {fileID: 588418129}

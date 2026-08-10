@@ -13,6 +13,7 @@ namespace LegionBreak.Presentation.Spawning
     {
         [SerializeField] private float _spawnIntervalSeconds = 0.1f;
         [SerializeField] private float _spawnRadius = 20f;
+        [SerializeField] private int _targetCount = 500;
 
         private IMonsterSpawner _spawner;
         private float _elapsed;
@@ -27,6 +28,15 @@ namespace LegionBreak.Presentation.Spawning
         {
             if (_spawner == null)
             {
+                return;
+            }
+
+            // 5주차에 몬스터 수명 타이머가 제거되어 디스폰 수단이 없어졌다 — 목표 개체 수에
+            // 도달하면 스스로 멈춰서, 정상 상태(Steady State) 프로파일링 캡처 때마다 수동으로
+            // 꺼야 했던 절차를 없앤다.
+            if (_spawner.ActiveCount >= _targetCount)
+            {
+                enabled = false;
                 return;
             }
 
