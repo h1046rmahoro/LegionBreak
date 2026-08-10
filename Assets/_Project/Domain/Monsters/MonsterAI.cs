@@ -11,18 +11,27 @@ namespace LegionBreak.Domain.Monsters
     /// </summary>
     public sealed class MonsterAI
     {
-        public float ChaseRange { get; }
-        public float AttackRange { get; }
-        public float AttackCooldownSeconds { get; }
+        public float ChaseRange { get; private set; }
+        public float AttackRange { get; private set; }
+        public float AttackCooldownSeconds { get; private set; }
         public MonsterAIState CurrentState { get; private set; } = MonsterAIState.Idle;
 
         private float _attackCooldownRemaining;
 
         public MonsterAI(float chaseRange, float attackRange, float attackCooldownSeconds)
         {
+            Reset(chaseRange, attackRange, attackCooldownSeconds);
+        }
+
+        // Health.Reset과 동일한 이유(6주차 프로파일링에서 스폰마다 new MonsterAI가 GC Alloc을
+        // 만드는 것을 실측 확인) — 인스턴스는 최초 1회만 만들고 재스폰 시에는 값만 되돌린다.
+        public void Reset(float chaseRange, float attackRange, float attackCooldownSeconds)
+        {
             ChaseRange = chaseRange;
             AttackRange = attackRange;
             AttackCooldownSeconds = attackCooldownSeconds;
+            CurrentState = MonsterAIState.Idle;
+            _attackCooldownRemaining = 0f;
         }
 
         public MonsterAIState Tick(float distanceToPlayer, bool isDead, float deltaTime)

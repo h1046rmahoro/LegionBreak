@@ -24,9 +24,15 @@ namespace LegionBreak.Infrastructure.Spawning
         [SerializeField] private int _prewarmCount = 500;
         [SerializeField] private MonsterData _monsterData;
 
-        private readonly Stack<MonsterView> _pool = new Stack<MonsterView>();
-        private readonly List<MonsterView> _activeViews = new List<MonsterView>();
-        private readonly Dictionary<MonsterView, int> _activeIndexByView = new Dictionary<MonsterView, int>();
+        // 용량을 지정하지 않고 시작하면(기존 new Stack<>()/new List<>()/new Dictionary<>())
+        // 몬스터 수가 늘어날 때마다 내부 배열이 2배씩 재할당되며 GC Alloc이 발생한다
+        // (6주차 프로파일링에서 GC 상위 기여자로 실측 확인, Frame with highest size가 이
+        // 재할당 시점과 일치). _prewarmCount를 이미 알고 있으므로 Awake에서 그 용량으로
+        // 미리 할당해 런타임 리사이즈를 없앤다(필드 초기화 시점엔 Inspector로 설정된
+        // _prewarmCount 값이 아직 적용되기 전이라 Awake에서 만들어야 한다).
+        private Stack<MonsterView> _pool;
+        private List<MonsterView> _activeViews;
+        private Dictionary<MonsterView, int> _activeIndexByView;
         private readonly List<MonsterView> _damageQueryBuffer = new List<MonsterView>();
         private Action<MonsterView> _onDeactivatedCached;
         private IMonsterMovementSystem _movementSystem;
@@ -58,6 +64,9 @@ namespace LegionBreak.Infrastructure.Spawning
 
         private void Awake()
         {
+            _pool = new Stack<MonsterView>(_prewarmCount);
+            _activeViews = new List<MonsterView>(_prewarmCount);
+            _activeIndexByView = new Dictionary<MonsterView, int>(_prewarmCount);
             _onDeactivatedCached = OnMonsterDeactivated;
             PrewarmAsync().Forget();
         }

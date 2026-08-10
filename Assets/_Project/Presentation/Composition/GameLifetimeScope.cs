@@ -113,7 +113,8 @@ namespace LegionBreak.Presentation.Composition
             // 풀링 Before/After 재측정(6주차) 등에서 다시 쓸 수 있는 별도 스트레스 테스트
             // 하네스이기 때문. 씬에는 WaveSpawnController와 MonsterSpawnTester 중
             // 하나의 GameObject만 활성화한다(둘 다 켜두면 중복 스폰됨).
-            builder.RegisterComponentInHierarchy<WaveSpawnController>();
+            //builder.RegisterComponentInHierarchy<WaveSpawnController>();
+            builder.RegisterComponentInHierarchy<MonsterSpawnTester>();
 
             // 프로파일링 측정용 디버그 HUD: 동시 몬스터 수 표시. MVP 패턴 첫 적용 사례로,
             // View(Presentation)와 Presenter(Application)를 분리했다. Presenter는 컨테이너가

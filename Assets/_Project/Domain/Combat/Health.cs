@@ -11,11 +11,20 @@ namespace LegionBreak.Domain.Combat
     /// </summary>
     public sealed class Health
     {
-        public float MaxHp { get; }
+        public float MaxHp { get; private set; }
         public float CurrentHp { get; private set; }
         public bool IsDead => CurrentHp <= 0f;
 
         public Health(float maxHp)
+        {
+            Reset(maxHp);
+        }
+
+        // 몬스터는 오브젝트 풀링으로 GameObject/컴포넌트를 재사용하지만, Health를 스폰마다
+        // new로 다시 만들면 그 재사용 효과가 도메인 상태에는 적용되지 않아 GC Alloc이
+        // 그대로 남는다(6주차 프로파일링에서 실측 확인). 그래서 인스턴스는 최초 1회만 만들고
+        // 재스폰 시에는 Reset으로 값만 되돌린다.
+        public void Reset(float maxHp)
         {
             MaxHp = maxHp;
             CurrentHp = maxHp;

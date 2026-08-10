@@ -26,13 +26,25 @@ namespace LegionBreak.Infrastructure.Spawning
         private IMonsterMovementSystem _movementSystem;
         private Action<MonsterView> _onDeactivated;
 
+        // Health/MonsterAI는 풀링되는 GameObject당 1회만 할당한다. Initialize()는 풀에서
+        // 꺼내 재스폰될 때마다 호출되는데, 여기서 new로 다시 만들면 GameObject/컴포넌트는
+        // 재사용해도 도메인 상태는 스폰마다 새로 GC Alloc이 발생한다(6주차 프로파일링에서
+        // MonsterView.Update() 콜스택 아래 GC.Alloc으로 실측 확인). Awake는 프리워밍 시
+        // Instantiate 직후 1회만 호출되므로, 여기서 만든 인스턴스를 Initialize()에서
+        // Reset()으로 재사용한다.
+        private void Awake()
+        {
+            _health = new Health(1f);
+            _ai = new MonsterAI(0f, 0f, 0f);
+        }
+
         public void Initialize(
             MonsterData data,
             IPlayerMotor playerMotor, IPlayerHealth playerHealth, IMonsterMovementSystem movementSystem,
             Action<MonsterView> onDeactivated)
         {
-            _health = new Health(data.MaxHp);
-            _ai = new MonsterAI(data.ChaseRange, data.AttackRange, data.AttackCooldownSeconds);
+            _health.Reset(data.MaxHp);
+            _ai.Reset(data.ChaseRange, data.AttackRange, data.AttackCooldownSeconds);
             _attackDamage = data.AttackDamage;
             _playerMotor = playerMotor;
             _playerHealth = playerHealth;
