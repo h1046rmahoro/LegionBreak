@@ -52,15 +52,18 @@ namespace LegionBreak.Infrastructure.Spawning
             _onDeactivated = onDeactivated;
         }
 
-        // 주의: TakeDamage는 사망 즉시 동기적으로 _onDeactivated를 호출해 비활성화하므로,
-        // MonsterAIState.Dead는 실제로 Update()를 통해 관측되지 않는다(Domain 단위 테스트로는
-        // 검증되지만 이 배선에서는 소비되지 않음). 사망 연출을 붙일 때 _onDeactivated 호출 전
-        // _ai.Tick(distance, true, 0f)를 한 번 호출하도록 보강이 필요하다.
+        // TakeDamage는 사망 즉시 동기적으로 _onDeactivated를 호출해 비활성화한다.
+        // Update()의 다음 프레임을 기다리면 그 시점엔 이미 풀에 반환돼 있을 수 있으므로,
+        // _onDeactivated 호출 전에 _ai.Tick(..., isDead: true, ...)을 직접 호출해 Dead 전이를
+        // 이 시점에 확정한다(distance는 isDead=true 분기에서 MonsterAI.Tick이 사용하지 않아
+        // 0f로 넘겨도 무방 — MonsterAI.cs 참고). 사망 연출/보상 소비처는 이후 이 지점(Dead
+        // 전이 확정 직후, _onDeactivated 호출 전)에 이어붙이면 된다.
         public void TakeDamage(float amount)
         {
             _health.TakeDamage(amount);
             if (_health.IsDead)
             {
+                _ai.Tick(0f, true, 0f);
                 _onDeactivated?.Invoke(this);
             }
         }
