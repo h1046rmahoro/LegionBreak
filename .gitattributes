@@ -1,0 +1,27 @@
+# Unity YAML text assets — 병합/diff 가능하도록 LFS 제외
+*.cs text
+*.unity text
+*.prefab text
+*.asset text
+*.mat text
+*.anim text
+*.controller text
+*.meta text
+
+# 3D 모델
+*.fbx filter=lfs diff=lfs merge=lfs -text
+*.FBX filter=lfs diff=lfs merge=lfs -text
+*.obj filter=lfs diff=lfs merge=lfs -text
+*.blend filter=lfs diff=lfs merge=lfs -text
+
+# 텍스처
+*.png filter=lfs diff=lfs merge=lfs -text
+*.psd filter=lfs diff=lfs merge=lfs -text
+*.tga filter=lfs diff=lfs merge=lfs -text
+*.tif filter=lfs diff=lfs merge=lfs -text
+*.exr filter=lfs diff=lfs merge=lfs -text
+
+# 오디오
+*.wav filter=lfs diff=lfs merge=lfs -text
+*.mp3 filter=lfs diff=lfs merge=lfs -text
+*.ogg filter=lfs diff=lfs merge=lfs -text
