@@ -9,6 +9,7 @@ using LegionBreak.Domain.Waves;
 using LegionBreak.Infrastructure.Movement;
 using LegionBreak.Infrastructure.Player;
 using LegionBreak.Infrastructure.Spawning;
+using LegionBreak.Presentation.Cameras;
 using LegionBreak.Presentation.GameOver;
 using LegionBreak.Presentation.Movement;
 using LegionBreak.Presentation.Skills;
@@ -125,6 +126,10 @@ namespace LegionBreak.Presentation.Composition
             // 직접 폴링하므로(이유는 GameOverView 주석 참고) 별도 Presenter/등록 없이
             // 컴포넌트만 씬에서 찾아 의존성을 주입한다.
             builder.RegisterComponentInHierarchy<GameOverView>();
+            // 카메라 추적. 씬에 배치된 Main Camera의 기존 탑다운 각도/거리를 Start 시점
+            // 오프셋으로 캐시해 그대로 유지한 채 플레이어 위치만 따라간다(자세한 이유는
+            // 클래스 주석 참고).
+            builder.RegisterComponentInHierarchy<CameraFollowController>();
         }
     }
 }
