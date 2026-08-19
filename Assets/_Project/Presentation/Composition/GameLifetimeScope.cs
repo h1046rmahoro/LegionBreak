@@ -12,6 +12,7 @@ using LegionBreak.Infrastructure.Spawning;
 using LegionBreak.Presentation.Cameras;
 using LegionBreak.Presentation.GameOver;
 using LegionBreak.Presentation.Movement;
+using LegionBreak.Presentation.Player;
 using LegionBreak.Presentation.Skills;
 using LegionBreak.Presentation.Spawning;
 using UnityEngine;
@@ -91,6 +92,7 @@ namespace LegionBreak.Presentation.Composition
                     resolver.Resolve<IMonsterSpawner>(),
                     resolver.Resolve<ICriticalHitJudge>(),
                     resolver.Resolve<IRandomProvider>(),
+                    resolver.Resolve<IEventBus>(),
                     _combatBalanceData.CriticalChance),
                 Lifetime.Singleton);
 
@@ -126,6 +128,16 @@ namespace LegionBreak.Presentation.Composition
             // 직접 폴링하므로(이유는 GameOverView 주석 참고) 별도 Presenter/등록 없이
             // 컴포넌트만 씬에서 찾아 의존성을 주입한다.
             builder.RegisterComponentInHierarchy<GameOverView>();
+
+            // 플레이어 애니메이션. IPlayerMotor 위치 변화량으로 IsMoving을, IEventBus로
+            // SkillCastResult를 구독해 Attack 트리거를, IPlayerHealth.IsDead로 IsDead를
+            // PlayerAnimatorController 파라미터에 반영한다(자세한 이유는 클래스 주석 참고).
+            builder.RegisterComponentInHierarchy<PlayerAnimationView>();
+
+            // Attack 상태에서만 루트 모션 델타를 Player Root로 중계(자세한 이유는 클래스
+            // 주석 참고). Animator가 있는 모델 GameObject에 직접 부착해야 한다.
+            builder.RegisterComponentInHierarchy<PlayerRootMotionRelay>();
+
             // 카메라 추적. 씬에 배치된 Main Camera의 기존 탑다운 각도/거리를 Start 시점
             // 오프셋으로 캐시해 그대로 유지한 채 플레이어 위치만 따라간다(자세한 이유는
             // 클래스 주석 참고).

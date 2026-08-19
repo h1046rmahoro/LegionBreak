@@ -14,6 +14,11 @@ namespace LegionBreak.Infrastructure.Movement
             transform.position += new Vector3(displacement.x, 0f, displacement.y);
         }
 
+        public void Rotate(Quaternion delta)
+        {
+            transform.rotation *= delta;
+        }
+
         // 몬스터 Seek 타겟팅(JobMonsterMovementSystem/MonoMonsterMovementSystem)이
         // 매 프레임 참조하는 플레이어 위치. XZ 평면 관례는 Move()와 동일하다.
         public Vector2 Position => new Vector2(transform.position.x, transform.position.z);

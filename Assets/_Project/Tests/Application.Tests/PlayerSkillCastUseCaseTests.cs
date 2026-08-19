@@ -1,3 +1,4 @@
+using LegionBreak.Application.Events;
 using LegionBreak.Application.Skills;
 using LegionBreak.Application.Spawning;
 using LegionBreak.Domain.Skills;
@@ -56,6 +57,7 @@ namespace LegionBreak.Application.Tests
                 spawner,
                 new CriticalHitJudge(),
                 new FakeRandomProvider(roll),
+                new EventBus(),
                 criticalChance);
         }
 
