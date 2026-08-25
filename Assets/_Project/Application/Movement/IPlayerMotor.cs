@@ -10,12 +10,16 @@ namespace LegionBreak.Application.Movement
     {
         void Move(Vector2 displacement);
 
-        // 루트 모션 회전 중계(PlayerRootMotionRelay) 전용. 이 게임은 이동 방향에 따라
-        // 캐릭터를 자동으로 회전시키지 않아(PlayerMoveUseCase가 회전을 전혀 다루지 않음)
-        // 별도 회전 판단 로직이 없고, Animator.deltaRotation을 그대로 누적 적용하는
-        // 단순 위임만 필요하다.
+        // 현재 바라보는 방향에 델타를 합성하는 원시 연산(transform.rotation *= delta).
+        // 목표 방향 계산은 전부 호출부 책임 — 이 메서드는 판단 없이 그대로 적용만 한다.
+        // 호출부는 둘: PlayerRootMotionRelay(Attack 중 Animator.deltaRotation을 그대로
+        // 전달)와 PlayerMoveUseCase(이동 방향을 바라보도록 계산한 델타를 전달).
         void Rotate(Quaternion delta);
 
         Vector2 Position { get; }
+
+        // PlayerMoveUseCase가 이동 방향으로 회전할 델타를 계산하려면 현재 방향을 알아야
+        // 한다(Position과 같은 이유로 포트에 노출).
+        Quaternion Rotation { get; }
     }
 }

@@ -27,6 +27,15 @@ namespace LegionBreak.Presentation.Player
     /// GetCurrentAnimatorStateInfo가 여전히 이전 상태를 가리켜, 공격 애니메이션 초반(전진
     /// 스텝이 몰려있는 구간)의 루트 모션이 통째로 씹혀 "이동도 회전도 안 하는" 것처럼
     /// 보였다 — 그 전이의 Transition Duration을 0으로 줄여 즉시 전환되게 해서 해결했다.
+    ///
+    /// (알려진 상호작용, 미해결) PlayerInputController는 Attack 상태 여부와 무관하게
+    /// 매 프레임 이동 입력을 그대로 PlayerMoveUseCase.Execute에 전달한다. 공격 중 이동키를
+    /// 누르고 있으면 이번 프레임에 PlayerMoveUseCase가 계산한 "입력 방향 회전 델타"와 이
+    /// 컴포넌트가 적용하는 "루트 모션 회전 델타"가 같은 프레임에 같은 Rotate() 위에서
+    /// 곱해져 서로 간섭할 수 있다(둘 다 transform.rotation *= delta 합성). 공격 중 이동
+    /// 입력을 별도로 막지 않는 기존 동작이 이미 있던 상태에, 이동 방향 회전 기능이 더해지며
+    /// 회전 쪽에서도 같은 성격의 간섭이 새로 생긴 것 — "공격 중 입력을 잠글지"는 별도
+    /// 신호 배선이 필요한 더 큰 변경이라 이번 범위에서는 다루지 않는다.
     /// </summary>
     public class PlayerRootMotionRelay : MonoBehaviour
     {
