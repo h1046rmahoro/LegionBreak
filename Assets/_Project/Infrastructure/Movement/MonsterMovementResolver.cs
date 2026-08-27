@@ -47,6 +47,14 @@ namespace LegionBreak.Infrastructure.Movement
         [SerializeField] private float _separationRadius = 0.5f;
         [SerializeField] private int _bucketCount = 1024;
 
+        // 겹치는 이웃마다 push를 그대로 누적하면(MonsterSeparationJob 참고) 밀집 클러스터에서
+        // 오버슈트→반대편 오버슈트가 반복되는 진동(떨림)이 생긴다. 1이면 매 프레임 겹침을
+        // 즉시 완전히 해소하려다 진동하고, 값을 낮출수록 여러 프레임에 걸쳐 서서히
+        // 수렴한다(2026-08-27, 좀비 모델 연결 후 밀집 클러스터에서 떨림 발견/수정). 기본값
+        // 0.2는 이론상 합리적인 초기값일 뿐 아직 Play 모드로 실측 튜닝하지 않았다 — 떨림이
+        // 남아있으면 더 낮추고, 겹침 해소가 너무 느리면 조금 올려서 확인 필요.
+        [SerializeField] private float _separationStrength = 0.2f;
+
         private IPlayerMotor _playerMotor;
         private TransformAccessArray _transformAccessArray;
         private readonly List<MonsterView> _viewsByIndex = new List<MonsterView>();
@@ -234,6 +242,7 @@ namespace LegionBreak.Infrastructure.Movement
                 CellSize = cellSize,
                 SeparationRadius = _separationRadius,
                 BucketCount = _bucketHeads.Length,
+                SeparationStrength = _separationStrength,
                 WalkableGridOrigin = new float2(_grid.Origin.x, _grid.Origin.y),
                 WalkableCellSize = _grid.CellSize,
                 WalkableGridWidth = _grid.Width,

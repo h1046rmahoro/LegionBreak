@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1157638564726141915}
   - component: {fileID: 7361506000793869976}
+  - component: {fileID: 7494750678185394152}
   m_Layer: 0
   m_Name: Monster
   m_TagString: Untagged
@@ -45,6 +46,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d37001e2c1f85a498f6026c4939c3b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: LegionBreak.Infrastructure::LegionBreak.Infrastructure.Spawning.MonsterView
+  _deathAnimationSeconds: 11.500001
+--- !u!136 &7494750678185394152
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017138086379564736}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1001 &7982532419260371534
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -96,6 +121,22 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 71e281e8df533d44bb9d1577d289703a, type: 3}
       propertyPath: m_Name
       value: ZombiegirlWKurniawan
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 71e281e8df533d44bb9d1577d289703a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 71e281e8df533d44bb9d1577d289703a, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 7f3238d77b8bf4a419136772e3cf8ca3, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 71e281e8df533d44bb9d1577d289703a, type: 3}
+      propertyPath: m_WarningMessage
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 71e281e8df533d44bb9d1577d289703a, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -24,6 +24,17 @@ namespace LegionBreak.Infrastructure.Movement
     ///    자기(이동 후) vs 이웃(이동 전) 사이에 한 프레임 미만의 시차가 생기지만, 프레임당
     ///    이동량이 겹침 판정 반경에 비해 매우 작아 무시 가능하다 — 원본도 이미 "완전한
     ///    물리가 아닌 근사"라고 명시하고 있어 정신은 동일하다.
+    ///
+    /// (2026-08-27, 좀비 모델 연결 후 발견) 겹침이 심한 구간(몬스터가 여러 방향에서 동시에
+    /// 겹치는 밀집 클러스터)에서 심한 떨림이 관측됐다. 원인은 totalPush가 "겹치는 이웃마다"
+    /// 보정량을 그대로 누적한다는 점 — 이웃이 2~3마리만 넘어도 실제 겹침 해소에 필요한
+    /// 양보다 훨씬 큰 push가 한 프레임에 즉시 적용되어 반대편으로 오버슈트하고, 다음
+    /// 프레임엔 그 반대편에서 다시 오버슈트하는 진동이 생긴다. 이 알고리즘은 7주차부터
+    /// 그대로였고 캡슐 프리미티브였을 땐(작고 상세가 없어 미세한 진동이 눈에 안 띔) 드러나지
+    /// 않다가, 실제 모델(디테일이 있는 휴머노이드)로 바뀌며 시각적으로 뚜렷해졌다.
+    /// SeparationStrength(0~1)로 한 프레임에 적용하는 보정 비율을 낮춰(기본 0.2) 여러
+    /// 프레임에 걸쳐 서서히 수렴하도록 감쇠시킨다 — 즉시 완전히 밀어내는 대신 매 프레임
+    /// 조금씩만 밀어내 오버슈트 자체를 없앤다.
     /// </summary>
     [BurstCompile]
     public struct MonsterSeparationJob : IJobParallelForTransform
@@ -36,6 +47,7 @@ namespace LegionBreak.Infrastructure.Movement
         public float CellSize;
         public float SeparationRadius;
         public int BucketCount;
+        public float SeparationStrength;
 
         public float2 WalkableGridOrigin;
         public float WalkableCellSize;
@@ -91,7 +103,7 @@ namespace LegionBreak.Infrastructure.Movement
                 return;
             }
 
-            var candidate = posA + totalPush;
+            var candidate = posA + totalPush * SeparationStrength;
             if (!IsWalkable(candidate))
             {
                 return;
