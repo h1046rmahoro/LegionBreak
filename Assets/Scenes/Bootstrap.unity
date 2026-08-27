@@ -761,6 +761,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: LegionBreak.Infrastructure::LegionBreak.Infrastructure.Movement.MonsterMovementResolver
   _moveSpeed: 3
+  _turnSpeedDegreesPerSecond: 720
   _initialCapacity: 500
   _gridHalfExtent: 40
   _cellSize: 1
@@ -770,6 +771,7 @@ MonoBehaviour:
   _regenerateInterval: 0.2
   _separationRadius: 0.5
   _bucketCount: 1024
+  _separationStrength: 0.2
 --- !u!4 &819365889
 Transform:
   m_ObjectHideFlags: 0

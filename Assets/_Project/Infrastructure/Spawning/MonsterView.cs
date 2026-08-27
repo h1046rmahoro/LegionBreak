@@ -27,7 +27,7 @@ namespace LegionBreak.Infrastructure.Spawning
         // 컨벤션과 같은 방향으로 맞춰둔다.
         private static readonly int AnimatorStateParam = Animator.StringToHash("State");
 
-        // "zombie agonizing" 사망 클립의 실제 길이 — MonsterAnimatorSetupTool이 Animator
+        // "zombie death" 사망 클립의 실제 길이 — MonsterAnimatorSetupTool이 Animator
         // Controller를 생성할 때 이 필드에 클립 길이를 자동으로 써준다(수동으로 값을 옮겨
         // 적을 필요 없음). 기본값 1f는 툴 실행 전 임시값.
         [SerializeField] private float _deathAnimationSeconds = 1f;

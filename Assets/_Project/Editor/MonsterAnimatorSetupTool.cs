@@ -33,7 +33,7 @@ namespace LegionBreak.Editor
             var idleClip = LoadClip("zombie idle.fbx", loop: true);
             var chaseClip = LoadClip("zombie running.fbx", loop: true);
             var attackClip = LoadClip("zombie attack.fbx", loop: false);
-            var deadClip = LoadClip("zombie agonizing.fbx", loop: false);
+            var deadClip = LoadClip("zombie death.fbx", loop: false);
 
             if (idleClip == null || chaseClip == null || attackClip == null || deadClip == null)
             {
@@ -152,6 +152,14 @@ namespace LegionBreak.Editor
             }
 
             animator.runtimeAnimatorController = controller;
+
+            // 몬스터 이동은 FlowFieldSeekJob이 매 프레임 transform.position/rotation을 직접
+            // 쓰는 방식이라, Animator의 Root Motion이 켜져 있으면 같은 프레임에 두 시스템이
+            // Transform을 각자 건드리며 충돌해 순간이동/불규칙한 방향 튐이 발생한다(2026-08-28
+            // 실측 확인). 컨트롤러를 재연결할 때마다 이 값을 매번 명시적으로 꺼서, 나중에
+            // 누군가 Inspector에서 실수로 다시 켜거나 Animator 재생성 시 기본값(true)으로
+            // 되돌아가는 걸 방지한다.
+            animator.applyRootMotion = false;
 
             // 사망 애니메이션 길이를 MonsterView._deathAnimationSeconds에 직접 써준다 — 사람이
             // Animation 창에서 클립 길이를 보고 다시 다른 필드에 타이핑해 옮기는 수작업을
