@@ -39,6 +39,11 @@ namespace LegionBreak.Infrastructure.Movement
     public class MonsterMovementResolver : MonoBehaviour, IMonsterMovementSystem, IMonsterSeparationSystem
     {
         [SerializeField] private float _moveSpeed = 3f;
+        // PlayerMoveUseCase의 TurnSpeedDegreesPerSecond와 같은 개념/기본값이다 — 플레이어와
+        // 달리 몬스터는 이동 계산 자체가 Application UseCase 없이 FlowFieldSeekJob 안에서
+        // 전부 끝나므로, 회전 속도도 별도 계층을 만들지 않고 이 Job의 파라미터로 그대로
+        // 전달한다.
+        [SerializeField] private float _turnSpeedDegreesPerSecond = 720f;
         [SerializeField] private int _initialCapacity = 500;
         [SerializeField] private float _gridHalfExtent = 40f;
         [SerializeField] private float _cellSize = 1f;
@@ -226,7 +231,8 @@ namespace LegionBreak.Infrastructure.Movement
                 GridHeight = _grid.Height,
                 FallbackTarget = new float2(target.x, target.y),
                 MoveSpeed = _moveSpeed,
-                DeltaTime = Time.deltaTime
+                DeltaTime = Time.deltaTime,
+                TurnSpeedDegreesPerSecond = _turnSpeedDegreesPerSecond
             };
             var moveHandle = moveJob.Schedule(_transformAccessArray);
 

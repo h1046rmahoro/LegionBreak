@@ -35,6 +35,7 @@ namespace LegionBreak.Infrastructure.Movement
         public float2 FallbackTarget;
         public float MoveSpeed;
         public float DeltaTime;
+        public float TurnSpeedDegreesPerSecond;
 
         public void Execute(int index, TransformAccess transform)
         {
@@ -61,6 +62,43 @@ namespace LegionBreak.Infrastructure.Movement
 
             var delta = direction * MoveSpeed * DeltaTime;
             transform.position = new Vector3(current.x + delta.x, current.y, current.z + delta.y);
+
+            RotateTowardsDirection(ref transform, direction);
+        }
+
+        // PlayerMoveUseCase(Quaternion.LookRotation + RotateTowards로 점진적 turn)와 개념은
+        // 같지만, 이 메서드는 [BurstCompile] Job 안에서 실행되므로 UnityEngine.Quaternion의
+        // LookRotation/RotateTowards(내부적으로 예외 처리 분기가 있어 Burst 호환이 불확실함)
+        // 대신 이 파일 전반에서 이미 쓰고 있는 Unity.Mathematics(quaternion/math.*)만으로
+        // 직접 구현했다 — 이 패키지는 애초에 Burst Job 안에서 안전하게 쓰도록 설계된 것이라
+        // 신뢰할 수 있다. 이동이 UseCase 없이 이 Job 안에서 전부 계산되므로, 회전도 별도
+        // 계층을 만들지 않고 같은 direction을 그대로 재사용한다. MovementActive가 false인
+        // 프레임(Idle/Attack)은 메서드 진입 전에 이미 return하므로, 이동을 멈추면 회전도
+        // 그 순간의 방향을 유지한 채 함께 멈춘다.
+        private void RotateTowardsDirection(ref TransformAccess transform, float2 direction)
+        {
+            var currentRotation = transform.rotation;
+            var from = new quaternion(currentRotation.x, currentRotation.y, currentRotation.z, currentRotation.w);
+            var to = quaternion.LookRotationSafe(new float3(direction.x, 0f, direction.y), math.up());
+
+            // 쿼터니언은 q와 -q가 같은 회전을 나타낸다(이중 피복) — dot이 음수면 최단 경로가
+            // 아니라 먼 길로 도는 것이므로, to의 부호를 뒤집어 항상 최단 경로로 보간한다.
+            var dot = math.clamp(math.dot(from.value, to.value), -1f, 1f);
+            var angleDegrees = math.degrees(math.acos(math.abs(dot))) * 2f;
+            if (angleDegrees < 0.0001f)
+            {
+                return;
+            }
+
+            if (dot < 0f)
+            {
+                to = new quaternion(-to.value);
+            }
+
+            var maxDegreesThisFrame = TurnSpeedDegreesPerSecond * DeltaTime;
+            var t = math.min(1f, maxDegreesThisFrame / angleDegrees);
+            var result = math.slerp(from, to, t);
+            transform.rotation = new Quaternion(result.value.x, result.value.y, result.value.z, result.value.w);
         }
 
         private float2 SampleWalkableDirection(float2 worldXZ)
