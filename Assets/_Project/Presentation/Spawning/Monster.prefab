@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d37001e2c1f85a498f6026c4939c3b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: LegionBreak.Infrastructure::LegionBreak.Infrastructure.Spawning.MonsterView
-  _deathAnimationSeconds: 2.966667
+  _deathAnimationSeconds: 2
 --- !u!1001 &5842435165057640914
 PrefabInstance:
   m_ObjectHideFlags: 0
