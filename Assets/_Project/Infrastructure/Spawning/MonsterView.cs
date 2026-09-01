@@ -18,8 +18,9 @@ namespace LegionBreak.Infrastructure.Spawning
     /// (2026-08-27: Monster.prefab의 캡슐 프리미티브를 실제 몬스터 모델(Humanoid 리그)의 자식
     /// 인스턴스로 교체. 이어서 Mixamo 애니메이션 팩을 연결하고 Animator를 통해
     /// MonsterAIState(Idle/Chase/Attack/Dead)를 그대로 따라가게 했다 — 판단 로직은 여전히
-    /// MonsterAI(Domain)에 있고, 이 클래스는 그 결과를 Animator에 반영만 한다. 모델/애니메이터
-    /// 교체는 MonsterAnimatorSetupTool이 담당하므로 이 클래스는 특정 몬스터 종류에 묶이지 않는다).
+    /// MonsterAI(Domain)에 있고, 이 클래스는 그 결과를 Animator에 반영만 한다. 이 클래스는
+    /// Animator를 "State" int 파라미터로만 구동하므로 모델/AnimatorController를 무엇으로
+    /// 바꾸든 특정 몬스터 종류에 묶이지 않는다 — 모델·애니메이터 세팅은 Unity 에디터에서 직접 한다).
     /// </summary>
     public class MonsterView : MonoBehaviour
     {
@@ -28,10 +29,9 @@ namespace LegionBreak.Infrastructure.Spawning
         // 컨벤션과 같은 방향으로 맞춰둔다.
         private static readonly int AnimatorStateParam = Animator.StringToHash("State");
 
-        // 사망 클립의 실제 길이 — MonsterAnimatorSetupTool이 Animator Controller를 생성할 때
-        // 이 필드에 클립 길이를 자동으로 써준다(수동으로 값을 옮겨 적을 필요 없음). 몬스터
-        // 종류(Zombiegirl/Brute)를 바꿔도 툴을 다시 실행하면 해당 사망 클립 길이로 갱신된다.
-        // 기본값 1f는 툴 실행 전 임시값.
+        // 사망 애니메이션 재생 시간. 몬스터가 죽으면 이 시간만큼 시체가 남았다가 디스폰된다
+        // (DeactivateAfterDeathAnimationAsync). Monster.prefab에서 Dead 상태 클립의 실제
+        // 길이에 맞춰 직접 설정한다 — 클립을 교체하면 이 값도 함께 갱신할 것.
         [SerializeField] private float _deathAnimationSeconds = 1f;
 
         private Health _health;
