@@ -15,10 +15,11 @@ namespace LegionBreak.Infrastructure.Spawning
     /// HP 판정(Health, 플레이어와 공유하는 도메인 클래스)과 AI 상태(MonsterAI)를 실제로 들고 있어 더는 "더미" 스텁이 아니다
     /// (2026-07-23: DummyMonsterView에서 개명 — HP 시스템이 붙기 전까지는 수명 타이머만
     /// 있는 풀링 파이프라인 검증용 스텁이었으나, 이제 전투 상태를 가진 실제 컴포넌트다).
-    /// (2026-08-27: Monster.prefab의 캡슐 프리미티브를 실제 몬스터 모델(ZombiegirlWKurniawan,
-    /// Humanoid 리그)의 자식 인스턴스로 교체. 이어서 Mixamo 좀비 애니메이션 팩을 연결하고
-    /// Animator를 통해 MonsterAIState(Idle/Chase/Attack/Dead)를 그대로 따라가게 했다 — 판단
-    /// 로직은 여전히 MonsterAI(Domain)에 있고, 이 클래스는 그 결과를 Animator에 반영만 한다).
+    /// (2026-08-27: Monster.prefab의 캡슐 프리미티브를 실제 몬스터 모델(Humanoid 리그)의 자식
+    /// 인스턴스로 교체. 이어서 Mixamo 애니메이션 팩을 연결하고 Animator를 통해
+    /// MonsterAIState(Idle/Chase/Attack/Dead)를 그대로 따라가게 했다 — 판단 로직은 여전히
+    /// MonsterAI(Domain)에 있고, 이 클래스는 그 결과를 Animator에 반영만 한다. 모델/애니메이터
+    /// 교체는 MonsterAnimatorSetupTool이 담당하므로 이 클래스는 특정 몬스터 종류에 묶이지 않는다).
     /// </summary>
     public class MonsterView : MonoBehaviour
     {
@@ -27,9 +28,10 @@ namespace LegionBreak.Infrastructure.Spawning
         // 컨벤션과 같은 방향으로 맞춰둔다.
         private static readonly int AnimatorStateParam = Animator.StringToHash("State");
 
-        // "zombie death" 사망 클립의 실제 길이 — MonsterAnimatorSetupTool이 Animator
-        // Controller를 생성할 때 이 필드에 클립 길이를 자동으로 써준다(수동으로 값을 옮겨
-        // 적을 필요 없음). 기본값 1f는 툴 실행 전 임시값.
+        // 사망 클립의 실제 길이 — MonsterAnimatorSetupTool이 Animator Controller를 생성할 때
+        // 이 필드에 클립 길이를 자동으로 써준다(수동으로 값을 옮겨 적을 필요 없음). 몬스터
+        // 종류(Zombiegirl/Brute)를 바꿔도 툴을 다시 실행하면 해당 사망 클립 길이로 갱신된다.
+        // 기본값 1f는 툴 실행 전 임시값.
         [SerializeField] private float _deathAnimationSeconds = 1f;
 
         private Health _health;

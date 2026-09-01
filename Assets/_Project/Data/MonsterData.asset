@@ -13,3 +13,7 @@ MonoBehaviour:
   m_Name: MonsterData
   m_EditorClassIdentifier: LegionBreak.Data::LegionBreak.Data.MonsterData
   _maxHp: 20
+  _chaseRange: 25
+  _attackRange: 1.5
+  _attackCooldownSeconds: 1
+  _attackDamage: 5
