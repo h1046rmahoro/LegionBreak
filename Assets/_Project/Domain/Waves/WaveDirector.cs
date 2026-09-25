@@ -46,15 +46,19 @@ namespace LegionBreak.Domain.Waves
                     continue;
                 }
 
-                allDone = false;
-                if (_elapsed < _nextSpawnTimes[i])
+                if (_elapsed >= _nextSpawnTimes[i])
                 {
-                    continue;
+                    _spawnedCounts[i]++;
+                    _nextSpawnTimes[i] = _elapsed + wave.SpawnIntervalSeconds;
+                    _spawnBuffer.Add(i);
                 }
 
-                _spawnedCounts[i]++;
-                _nextSpawnTimes[i] = _elapsed + wave.SpawnIntervalSeconds;
-                _spawnBuffer.Add(i);
+                // 완료 여부는 이번 틱의 스폰을 반영한 "후"에 판정한다. 스폰 전에 판정하면
+                // 마지막 몬스터를 내보낸 바로 그 틱에는 완료가 보고되지 않고 한 틱 늦게 true가 된다.
+                if (_spawnedCounts[i] < wave.MonsterCount)
+                {
+                    allDone = false;
+                }
             }
 
             IsSequenceComplete = allDone;

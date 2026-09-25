@@ -20,9 +20,9 @@ namespace LegionBreak.Domain.Tests
         public void Tick_AtStartTime_SpawnsFirstMonsterOfWave()
         {
             var director = new WaveDirector(new[] { new WaveDefinition(startTimeSeconds: 1f, monsterCount: 3, spawnIntervalSeconds: 1f) });
-            director.Tick(1f);
 
-            var result = director.Tick(0f);
+            // 경과 시간이 정확히 시작 시각에 도달하는 틱에서 바로 첫 몬스터가 스폰돼야 한다.
+            var result = director.Tick(1f);
 
             CollectionAssert.AreEqual(new[] { 0 }, result.WaveIndexesToSpawn);
         }
