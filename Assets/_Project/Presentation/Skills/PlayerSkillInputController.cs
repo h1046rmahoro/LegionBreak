@@ -17,6 +17,14 @@ namespace LegionBreak.Presentation.Skills
         private InputAction _castAction;
         private Camera _camera;
 
+        /// <summary>
+        /// 마지막으로 시전에 성공한 지점(XZ 평면). 쿨다운 실패는 "발동"이 아니라 갱신하지 않는다.
+        /// 에디터 씬 뷰 사거리 기즈모(Editor/Skills/SkillRangeGizmo)가 Play 중 실제 발동 지점을
+        /// 읽기 위한 접근점이다 — SkillCastResult/IEventBus에 위치를 싣지 않은 이유는 에디터 툴이
+        /// DI 컨테이너·R3 구독에 의존하지 않게 하려는 것.
+        /// </summary>
+        public Vector2? LastCastPoint { get; private set; }
+
         [Inject]
         public void Construct(IPlayerSkillCastUseCase castUseCase, IPlayerHealth playerHealth)
         {
@@ -54,6 +62,10 @@ namespace LegionBreak.Presentation.Skills
             var targetPoint = new Vector2(worldPoint.x, worldPoint.z);
 
             var result = _castUseCase.Execute(targetPoint);
+            if (result.Success)
+            {
+                LastCastPoint = targetPoint;
+            }
 
             var criticalSuffix = result.IsCritical ? " (CRIT)" : "";
             Debug.Log(result.Success ? $"Skill cast: {result.Damage} dmg x {result.HitCount} hit(s){criticalSuffix}" : "Skill on cooldown");

@@ -13,6 +13,10 @@ namespace LegionBreak.Editor.Skills
     /// </summary>
     public sealed class SkillCatalogWindow : EditorWindow
     {
+        // 씬 뷰 사거리 기즈모(SkillRangeGizmo)가 프로젝트 창 Selection이 비었을 때 이 창의
+        // 선택 스킬을 대신 그리기 위한 접근점.
+        internal static SkillData CurrentSelected { get; private set; }
+
         private const string DataFolderParent = "Assets/_Project/Data";
         private const string SkillFolder = "Assets/_Project/Data/Skills";
 
@@ -56,6 +60,16 @@ namespace LegionBreak.Editor.Skills
         {
             _selected = skill;
             _selectedSO = skill != null ? new SerializedObject(skill) : null;
+            CurrentSelected = skill;
+            SceneView.RepaintAll(); // 사거리 기즈모가 새 선택을 바로 반영하도록
+        }
+
+        private void OnDisable()
+        {
+            if (CurrentSelected == _selected)
+            {
+                CurrentSelected = null;
+            }
         }
 
         private void OnGUI()
