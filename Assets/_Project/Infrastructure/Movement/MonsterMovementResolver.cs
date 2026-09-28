@@ -295,6 +295,28 @@ namespace LegionBreak.Infrastructure.Movement
             }
         }
 
+        // ---- 에디터 디버그 오버레이 전용 읽기 접근자 (9주차, Editor/Movement/MovementDebugGizmo) ----
+        // internal + InternalsVisibleTo("LegionBreak.Editor")라 런타임 어셈블리(Presentation 등)
+        // 에서는 보이지 않는다 — 게임 코드가 이동 파이프라인 내부 버퍼에 의존하는 경로를 만들지
+        // 않으면서, 씬 뷰에서 FlowField/Spatial Hash의 실제 런타임 상태를 그대로 그리기 위함이다.
+        // 복사본을 만들지 않고 Job이 실제로 읽는 버퍼를 그대로 노출해야 "보이는 것 = Job이 쓰는
+        // 것"이 보장된다.
+        internal WalkableGrid DebugGrid => _grid;
+        internal FlowFieldGenerator DebugFlowField => _flowField;
+        internal int DebugMonsterCount => _viewsByIndex.Count;
+        internal float DebugSeparationRadius => _separationRadius;
+        internal float DebugSeparationCellSize => _separationRadius * 2f;
+        internal NativeArray<float2> DebugPositions => _positions;
+        internal NativeArray<int> DebugBucketHeads => _bucketHeads;
+        internal NativeArray<int> DebugNext => _next;
+        internal int DebugHashCell(int cellX, int cellZ) => HashCell(cellX, cellZ);
+        internal bool DebugTryGetIndex(MonsterView view, out int index) => _indexByView.TryGetValue(view, out index);
+
+        // 스케줄된 Job이 아직 버퍼를 쓰는 중이면 메인 스레드 읽기가 세이프티 예외를 던진다.
+        // 씬 뷰 GUI는 LateUpdate의 Complete() 이후에 그려지므로 보통은 이미 끝나 있지만,
+        // 호출 시점을 에디터가 보장하지 않으므로 읽기 전에 명시적으로 완료시킨다.
+        internal void DebugCompleteJobs() => _jobHandle.Complete();
+
         // SpatialHashMonsterSeparationSystem.HashCell과 동일하다 — 메인 스레드에서 버킷을
         // 구성할 때 쓰고, Job 내부(MonsterSeparationJob.HashCell)에서도 같은 해시를 다시
         // 계산한다(Burst Job은 이 클래스의 메서드를 호출할 수 없어 복제가 불가피하다).

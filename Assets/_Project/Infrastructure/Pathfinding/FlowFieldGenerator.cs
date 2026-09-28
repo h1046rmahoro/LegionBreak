@@ -34,6 +34,12 @@ namespace LegionBreak.Infrastructure.Pathfinding
         private NativeArray<int> _distances;
         private readonly int[] _queue;
 
+        // 에디터 디버그 오버레이(BFS 거리 히트맵) 전용. internal이라 Editor 어셈블리에만 보인다
+        // (Infrastructure/AssemblyInfo.cs의 InternalsVisibleTo). GoalCellIndex가 -1이면 아직
+        // Generate()가 한 번도 실행되지 않아 _distances가 초기화 전(전부 0)이라는 뜻이다.
+        internal NativeArray<int> DebugDistances => _distances;
+        internal int DebugGoalCellIndex { get; private set; } = -1;
+
         public FlowFieldGenerator(WalkableGrid grid)
         {
             _width = grid.Width;
@@ -58,6 +64,7 @@ namespace LegionBreak.Infrastructure.Pathfinding
             var head = 0;
             var tail = 0;
             var goalIndex = grid.CellIndex(goalX, goalZ);
+            DebugGoalCellIndex = goalIndex;
             _distances[goalIndex] = 0;
             _queue[tail++] = goalIndex;
 
