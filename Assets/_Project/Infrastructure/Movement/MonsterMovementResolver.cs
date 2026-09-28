@@ -79,6 +79,14 @@ namespace LegionBreak.Infrastructure.Movement
         private NativeArray<float2> _positions;
         private int _capacity;
 
+        // 마지막으로 버킷/체인(_bucketHeads/_next/_positions)을 구성할 때의 몬스터 수. 에디터
+        // 디버그 오버레이 전용이다(Job은 Update가 버킷을 구성한 직후에만 스케줄되므로 필요 없음).
+        // 몬스터가 등록됐지만 Update가 아직 버킷을 만들기 전(재시작 직후 등)이나 EnsureCapacity가
+        // _next를 새로 할당한 직후에는 0으로 초기화된 버퍼가 남아 있다. 이때 체인을 따라가면
+        // next[0] == 0이라 0 → 0 → 0…으로 끝나지 않는다. 그래서 오버레이는 이 값 범위 안에서만
+        // 체인을 따라간다.
+        private int _bucketBuiltCount;
+
         [Inject]
         public void Construct(IPlayerMotor playerMotor)
         {
@@ -179,6 +187,8 @@ namespace LegionBreak.Infrastructure.Movement
             _positions = new NativeArray<float2>(newCapacity, Allocator.Persistent);
 
             _capacity = newCapacity;
+            // _next가 0으로 초기화된 새 버퍼로 바뀌어 기존 체인은 더는 유효하지 않다.
+            _bucketBuiltCount = 0;
         }
 
         private void Update()
@@ -219,6 +229,8 @@ namespace LegionBreak.Infrastructure.Movement
                 _next[i] = _bucketHeads[bucket];
                 _bucketHeads[bucket] = i;
             }
+
+            _bucketBuiltCount = count;
 
             var moveJob = new FlowFieldSeekJob
             {
@@ -304,6 +316,7 @@ namespace LegionBreak.Infrastructure.Movement
         internal WalkableGrid DebugGrid => _grid;
         internal FlowFieldGenerator DebugFlowField => _flowField;
         internal int DebugMonsterCount => _viewsByIndex.Count;
+        internal int DebugBucketBuiltCount => _bucketBuiltCount;
         internal float DebugSeparationRadius => _separationRadius;
         internal float DebugSeparationCellSize => _separationRadius * 2f;
         internal NativeArray<float2> DebugPositions => _positions;

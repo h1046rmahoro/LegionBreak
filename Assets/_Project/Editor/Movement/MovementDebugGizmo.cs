@@ -243,9 +243,14 @@ namespace LegionBreak.Editor.Movement
 
         // MonsterSeparationJob.Execute와 같은 순회(자기 셀 기준 3x3 버킷, 체인 따라가기)를 메인
         // 스레드에서 그대로 재현해, 이번 프레임 Job이 실제로 수행한 거리 비교 횟수를 센다.
+        //
+        // 몬스터 수는 DebugMonsterCount(현재 등록 수)가 아니라 DebugBucketBuiltCount(버킷을
+        // 마지막으로 구성한 시점의 수)를 쓴다. 등록 직후 버킷이 아직 만들어지지 않은 프레임에는
+        // 0으로 초기화된 버퍼의 next[0] == 0 때문에 체인 순회가 끝나지 않아 에디터가 멈췄다
+        // (2026-09-28, 사망 후 재시작으로 씬을 리로드한 직후 재현). 체인 인덱스도 같은 범위로 가드한다.
         private static void ComputeHashStats(MonsterMovementResolver resolver, ref MovementDebugStats stats)
         {
-            var count = resolver.DebugMonsterCount;
+            var count = resolver.DebugBucketBuiltCount;
             var positions = resolver.DebugPositions;
             var bucketHeads = resolver.DebugBucketHeads;
             var next = resolver.DebugNext;
@@ -278,7 +283,7 @@ namespace LegionBreak.Editor.Movement
                     for (var dz = -1; dz <= 1; dz++)
                     {
                         var j = bucketHeads[resolver.DebugHashCell(cellX + dx, cellZ + dz)];
-                        while (j != -1)
+                        while (j >= 0 && j < count)
                         {
                             if (j != i)
                             {
@@ -419,7 +424,10 @@ namespace LegionBreak.Editor.Movement
             var selected = Selection.activeGameObject;
             // 모델 자식(Brute 메시 등)을 클릭해도 루트의 MonsterView를 찾는다.
             var view = selected != null ? selected.GetComponentInParent<MonsterView>() : null;
-            if (view == null || !resolver.DebugTryGetIndex(view, out var index))
+            // 버킷이 아직 이 몬스터를 포함해 구성되지 않았으면(등록 직후 프레임) 그리지 않는다 —
+            // ComputeHashStats 주석의 무한 루프와 같은 이유.
+            var builtCount = resolver.DebugBucketBuiltCount;
+            if (view == null || !resolver.DebugTryGetIndex(view, out var index) || index >= builtCount)
             {
                 return;
             }
@@ -455,7 +463,7 @@ namespace LegionBreak.Editor.Movement
                 for (var dz = -1; dz <= 1; dz++)
                 {
                     var j = bucketHeads[resolver.DebugHashCell(cellX + dx, cellZ + dz)];
-                    while (j != -1)
+                    while (j >= 0 && j < builtCount)
                     {
                         if (j != index)
                         {
